@@ -137,9 +137,11 @@ def main():
     save_summary(args.output,items,len(tasks))
     for index,(case,repeat,variant) in enumerate(tasks):
         label=f'{index+1:03}-{case.id}-{variant}-r{repeat+1}'
+        def progress(message):print(f'[{index+1}/{len(tasks)}] {message}',flush=True)
+        progress(f'Starting {case.id}: {case.question}')
         try:
             base=create_model()
-            run=run_case(case,base,args.budget,args.mode,variant=='enabled',args.target)
+            run=run_case(case,base,args.budget,args.mode,variant=='enabled',args.target,progress=progress)
         except Exception as error:
             run={'case_id':case.id,'category':case.category,'question':case.question,'target':args.target,'mode':args.mode,
                  'as_of':datetime.now(timezone.utc).date().isoformat(),'status':'error','workflow':None,'report':None,
@@ -150,14 +152,18 @@ def main():
         run['deterministic']=deterministic_metrics(case,run)
         write_json(args.output/(label+'.json'),run) # Persist agent result before any optional judge.
         write_json(args.output/(label+'.review.json'),manual_template(case,run))
+        items.append(run)
+        write_json(args.output/'index.json',[{'label':i['label'],'case_id':i['case_id'],'status':i['status']} for i in items])
+        save_summary(args.output,items,len(tasks))
+        progress('Answer saved; judging next' if args.judge else 'Answer saved')
         if args.judge:
             try:
                 from unittest.mock import patch
                 provider=args.judge_provider or os.getenv('LLM_PROVIDER','ollama')
                 with patch.dict(os.environ,{'LLM_PROVIDER':provider}):judge=create_model(args.judge_model,system_prompt=JUDGE_SYSTEM)
-                run['llm_judged']=judge_run(case,run,judge,args.judge_budget)
+                run['llm_judged']=judge_run(case,run,judge,args.judge_budget,progress=progress)
             except Exception as error:run['llm_judged']={'method':'llm_judged','errors':[{'type':type(error).__name__}],'metrics':{}}
-        items.append(run);write_json(args.output/(label+'.json'),run)
+        write_json(args.output/(label+'.json'),run)
         write_json(args.output/'index.json',[{'label':i['label'],'case_id':i['case_id'],'status':i['status']} for i in items])
         save_summary(args.output,items,len(tasks))
         print(label,run['status'],f"agent requests={run['telemetry']['request_budget_used']}",flush=True)

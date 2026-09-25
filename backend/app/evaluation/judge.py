@@ -110,11 +110,16 @@ def assessment_metrics(packet,result):
     return metrics
 
 
-def judge_run(case,run,base_model,budget=12):
+def judge_run(case,run,base_model,budget=12,progress=None):
     packet=judge_packet(case,run);meter=MeteredModel(base_model,budget)
     output={'method':'llm_judged','model':getattr(base_model,'model',type(base_model).__name__),
             'rubric_version':'1.0','task':None,'claims':[],'sentiment':None,'errors':[]}
-    def ask(phase,context,schema):return meter.respond('evaluation_'+phase,context,schema,90).model_dump()
+    def ask(phase,context,schema):
+        if progress:progress(f'Judge call {meter.used+1}: {phase} started')
+        try:
+            return meter.respond('evaluation_'+phase,context,schema,90).model_dump()
+        finally:
+            if progress:progress(f'Judge call finished: {phase}')
     try:
         task=ask('task',{'question':packet['question'],'expected_outcome':packet['expected_outcome'],'criteria':packet['criteria'],
              'answer':[{k:v for k,v in c.items() if k!='cited_evidence'} for c in packet['claims']],

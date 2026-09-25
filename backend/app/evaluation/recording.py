@@ -16,8 +16,9 @@ from app.evaluation.sources import BenchmarkRegistry, source_environment
 from app.evaluation.frozen_sources import AS_OF
 
 class RecordingModel:
-    def __init__(self,base,budget):
+    def __init__(self,base,budget,progress=None):
         self.base=base
+        self.progress=progress or (lambda message:None)
         self.meter=MeteredModel(base,budget)
         self.decisions=[]
     @property
@@ -33,12 +34,15 @@ class RecordingModel:
               'available_tools':[s['name'] for s in context.get('available_tools',[])],
               'prior_tool_count':len(context.get('previous_calls',context.get('previous_tool_calls',[])))}
         self.decisions.append(item)
+        self.progress(f"Model call {self.meter.used+1}: {phase} started")
         try:
             result=self.meter.respond(phase,context,schema,timeout)
             item.update(status='ok',output=result.model_dump())
+            self.progress(f"Model call finished: {phase}")
             return result
         except Exception as error:
             item.update(status='error',error=type(error).__name__)
+            self.progress(f"Model call failed: {phase} ({type(error).__name__})")
             raise
 
 class RecordingRegistry:
@@ -57,14 +61,14 @@ class RecordingRegistry:
         finally:item['seconds']=round(time.monotonic()-start,4)
 
 
-def run_case(case,base_model,budget=36,mode='frozen',sentiment=True,target='assistant',registry=None):
+def run_case(case,base_model,budget=36,mode='frozen',sentiment=True,target='assistant',registry=None,progress=None):
     """Sequential only: local patches are scoped to this dedicated evaluation process."""
     import os
     import app.ideas.tools as ideas_tools
     import app.ideas.sentiment as sentiment_module
     from app.ideas.market import snapshot
     from app.providers.investing_guides import investing_guide
-    started=time.monotonic();model=RecordingModel(base_model,budget)
+    started=time.monotonic();model=RecordingModel(base_model,budget,progress)
     owned=None
     if registry is None:
         if mode=='frozen':registry=BenchmarkRegistry(case.scenario)
