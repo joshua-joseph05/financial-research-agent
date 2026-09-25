@@ -7,7 +7,8 @@ def rate(passed,total):return {'passed':passed,'total':total,'rate':passed/total
 
 
 def evidence_inventory(run):
-    records={};sources={}
+    records={e['id']:e for e in run['trace'].get('provided_evidence',[])}
+    sources={s['id']:s for s in run['trace'].get('provided_sources',[])}
     def add(payload):
         if not isinstance(payload,dict):return
         evidence=payload.get('evidence',[])

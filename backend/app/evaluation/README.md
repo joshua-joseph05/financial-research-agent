@@ -268,3 +268,21 @@ Its `cases.json`, `blind-review.json` and summarizer are a separate legacy forma
   or pool frozen/live results without clearly separating them.
 - Sentiment samples are bounded, not market consensus. Attribution metadata does not
   establish expertise, and no evaluation establishes future returns or suitability.
+
+## Compare against one model call
+
+The same-evidence baseline uses the exact model and question from each saved full-agent run. It receives collected source material and Python calculation results, but no plan, findings, verification or generated sentiment interpretations. Both answers get fresh judgments using the same answer-only criteria. See [the protocol](BASELINE_DESIGN.md).
+
+```bash
+python -m app.evaluation.baseline_compare \
+  --agent-directory work/eval-full-local-2026-09-25 \
+  --output work/baseline-comparison-2026-09-25 \
+  --judge-provider ollama --judge-model gemma4:e4b \
+  --wait --max-requests 2340
+```
+
+`--wait` waits for the full benchmark's process lock before any inference. `--resume` reuses saved baseline answers and judgments. `--dry-run` shows the request upper bound without inference. The upper bound includes retries and two independent answer assessments per pair; it is not an estimate of actual usage. Local Ollama has no paid API charges.
+
+`comparison.md` contains aggregate and per-category paired metrics plus improved, worse, mixed and no-gain examples. `comparison.json` retains missing-assessment counts and per-pair details; each pair artifact contains the two answers, fresh judgments, calculation checks and telemetry. Partial reports are explicitly labeled.
+
+The baseline inherits the agent's evidence collection. Its latency is answer-only, not an independently deployable end-to-end system cost. This comparison tests synthesis with shared evidence, not retrieval superiority. Do not interpret these results as investment returns or assume agent superiority.
