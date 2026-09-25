@@ -170,3 +170,15 @@ def test_cli_writes_real_matched_reports_and_resumes_without_model_calls(agent,t
     monkeypatch.setattr(cli,'create_model',resumed)
     monkeypatch.setattr(sys,'argv',argv+['--resume']);cli.main()
     assert json.loads((output/'comparison.json').read_text())==report
+
+def test_comparison_claim_batches_fit_local_output_budget(agent):
+    from app.evaluation.judge import judge_run
+    agent['report']={'answer_sections':[{'text':f'Explanation {i}','evidence_ids':[]} for i in range(10)]}
+    sizes=[]
+    class Audit(Judge):
+        def respond(self,phase,context,schema,timeout):
+            if phase=='evaluation_claims':sizes.append(len(context['claims']))
+            return super().respond(phase,context,schema,timeout)
+    result=judge_run(case(),agent,Audit(),answer_only=True)
+    assert sizes==[3,3,3,1]
+    assert result['metrics']['claim_assessment_coverage']['rate']==1

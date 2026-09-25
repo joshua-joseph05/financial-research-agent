@@ -133,8 +133,10 @@ def judge_run(case,run,base_model,budget=12,progress=None,answer_only=False,shar
              'instruction':('Judge substantive answer quality only. Both answers receive prepared source evidence and may use supplied Python calculations. Do not require a tool call, plan, delegation, or verification step as evidence of quality. Treat criterion wording about retrieval/calculation as requiring correct sourced content, not a particular implementation. Set tool_appropriateness to unassessed; no tool trace is supplied. ' if answer_only else '')+'Assess each criterion exactly once by criterion_id. A faithful acknowledgment of insufficient evidence or focused clarification may fulfill a qualified_answer/clarification task. An empty answer or exception is not completion. '+('' if answer_only else 'Assess tools for this question, including follow-up after missing evidence, whether the selected follow-up addresses the gap, premature stopping, and unnecessary calls after enough evidence. Decisions include what evidence was available at that point. Do not use the production complete flag or self-review.')},TaskRating)
         exact_ids(task['criteria'],'criterion_id',[c['id'] for c in packet['criteria']]);output['task']=task
     except Exception as error:output['errors'].append({'phase':'task','type':type(error).__name__})
-    for offset in range(0,len(packet['claims']),6):
-        batch=packet['claims'][offset:offset+6]
+    # Smaller answer-only batches fit the local provider's 1536-token output cap.
+    batch_size=3 if answer_only else 6
+    for offset in range(0,len(packet['claims']),batch_size):
+        batch=packet['claims'][offset:offset+batch_size]
         try:
             checked=ask('claims',{'question':case.question,'claims':batch,
                 'instruction':'Assess EVERY supplied claim_id exactly once. supported requires all material assertions to follow from its cited_evidence with correct company, units, period and qualifications. Cite supporting evidence IDs from that claim only. contradicted means cited evidence conflicts; insufficient means material assertions lack support. nonfactual is only procedural guidance, a question or disclosure without verifiable assertions. Opinion/forecast must stay attributed and uncertain. General explanatory factual statements still require support. A segment containing an unsupported material assertion is not supported.'},ClaimRatings)['checks']

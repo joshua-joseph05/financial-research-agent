@@ -123,6 +123,8 @@ def main():
                       'settings':settings,'planned_pairs':planned,'request_upper_bound':bound,'code_sha256':fingerprint(),
                       'source_manifest':original,'state':'waiting_for_source'}
             write_json(path,manifest)
+        manifest.setdefault('execution_code_sha256',[]).append(fingerprint())
+        write_json(path,manifest)
         pairs=[json.loads(p.read_text()) for p in sorted(args.output.glob('*-comparison.json')) if 'calculations' in json.loads(p.read_text())]
         save_report(args.output,pairs,categories)
         with source_lock(args.agent_directory,args.wait,lambda message:print(message,flush=True)):
