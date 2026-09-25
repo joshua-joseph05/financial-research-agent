@@ -25,7 +25,7 @@ python -m app.evaluation.benchmark --case education-01 --budget 8 --judge --judg
 python -m app.evaluation.benchmark --case education-01 --budget 8 --judge --judge-budget 8 --output work/eval-smoke
 ```
 
-Use a **new output directory for every experiment**. Frozen mode does not need SEC
+Use a **new output directory for every experiment**, or add `--resume` with the same configuration to continue an interrupted one. Completed cases are skipped; saved answers awaiting judging are reused. A process lock prevents duplicate runners. Code hashes for resumptions are recorded in the manifest. Frozen mode does not need SEC
 credentials and never fetches live financial or article sources. It still calls
 the selected LLM: Ollama is local; OpenRouter consumes API quota. No paid-model
 fallback is added. Omitting `--judge` avoids judge requests and leaves semantic
@@ -144,7 +144,7 @@ focused live-source check; see [SENTIMENT_VALIDATION.md](SENTIMENT_VALIDATION.md
 Each agent result is saved before judging. Output updates are atomic. Runs execute
 sequentially because evaluation patches are process-scoped. Do not import the
 runner into the serving web process. An interrupted experiment retains already
-written artifacts; it does not automatically resume or overwrite them. Planned
+written artifacts. Rerun the same command with `--resume` to continue; it does not restart automatically. Planned
 versus recorded counts expose incomplete experiments. Model traces contain typed
 outputs and short tool-selection reasons, not hidden chain-of-thought.
 

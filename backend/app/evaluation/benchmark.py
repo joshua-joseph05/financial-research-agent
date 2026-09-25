@@ -111,6 +111,7 @@ def main():
     parser.add_argument('--seed',type=int,default=42)
     parser.add_argument('--output',type=Path,required=True)
     parser.add_argument('--dry-run',action='store_true')
+    parser.add_argument('--resume',action='store_true',help='Reuse saved answers and finish pending judging in the same experiment')
     args=parser.parse_args()
     if not 1<=args.repeats<=3 or not 4<=args.budget<=36 or not 1<=args.judge_budget<=48:parser.error('repeats: 1–3; agent budget: 4–36; judge budget: 1–48')
     cases=[c for c in load_cases() if (args.case=='all' or c.id==args.case) and (not args.category or c.category==args.category)]
@@ -124,38 +125,61 @@ def main():
     print(f'{len(tasks)} runs, maximum {bound} model requests including retries and judges. Mode: {args.mode}.')
     if args.dry_run:return
     if bound>args.max_requests:parser.error('Request ceiling exceeded; reduce scope or explicitly raise --max-requests')
-    if args.output.exists():parser.error('Output already exists; choose a new directory')
-    args.output.mkdir(parents=True)
+    if args.output.exists() and not args.resume:parser.error('Output already exists; choose a new directory or use --resume')
+    if args.resume and not (args.output/'manifest.json').exists():parser.error('Resume requires an existing manifest')
+    args.output.mkdir(parents=True,exist_ok=args.resume)
+    import fcntl
+    lock=(args.output/'.run.lock').open('a')
+    try:fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
+    except BlockingIOError:parser.error('This experiment is already running')
     try:revision=subprocess.check_output(['git','rev-parse','HEAD'],text=True,stderr=subprocess.DEVNULL).strip()
     except (OSError,subprocess.CalledProcessError):revision=None
     manifest={'version':'1.0','created_at':datetime.now(timezone.utc).isoformat(),'code_and_data_sha256':fingerprint(),'git_revision':revision,
               'provider':os.getenv('LLM_PROVIDER','ollama'),'options':{k:str(v) if isinstance(v,Path) else v for k,v in vars(args).items()},
               'planned_runs':len(tasks),'request_upper_bound':bound,'cases':[c.model_dump() for c in cases],
               'label_provenance':'Authored benchmark labels; not independently annotated by financial experts.'}
-    write_json(args.output/'manifest.json',manifest);items=[]
-    write_json(args.output/'index.json',[])
+    items=[]
+    if args.resume:
+        previous=json.loads((args.output/'manifest.json').read_text())
+        keys=('case','category','mode','target','sentiment','repeats','budget','judge','judge_provider','judge_model','judge_budget','seed')
+        if previous['cases']!=manifest['cases'] or any(previous['options'].get(k)!=manifest['options'].get(k) for k in keys) or previous['provider']!=manifest['provider']:
+            parser.error('Resume configuration differs from the original experiment')
+        previous.setdefault('resumptions',[]).append({'at':manifest['created_at'],'code_and_data_sha256':manifest['code_and_data_sha256'],'git_revision':revision})
+        manifest=previous
+        for path in sorted(args.output.glob('[0-9]*.json')):
+            if not path.name.endswith('.review.json'):items.append(json.loads(path.read_text()))
+        print(f'Resuming: {len(items)} saved answers will be reused.',flush=True)
+    write_json(args.output/'manifest.json',manifest)
+    write_json(args.output/'index.json',[{'label':i['label'],'case_id':i['case_id'],'status':i['status']} for i in items])
     save_summary(args.output,items,len(tasks))
     for index,(case,repeat,variant) in enumerate(tasks):
         label=f'{index+1:03}-{case.id}-{variant}-r{repeat+1}'
         def progress(message):print(f'[{index+1}/{len(tasks)}] {message}',flush=True)
-        progress(f'Starting {case.id}: {case.question}')
-        try:
-            base=create_model()
-            run=run_case(case,base,args.budget,args.mode,variant=='enabled',args.target,progress=progress)
-        except Exception as error:
-            run={'case_id':case.id,'category':case.category,'question':case.question,'target':args.target,'mode':args.mode,
-                 'as_of':datetime.now(timezone.utc).date().isoformat(),'status':'error','workflow':None,'report':None,
-                 'errors':[{'type':type(error).__name__}],'telemetry':{'request_budget_used':0,'calls':[]},'latency_seconds':0,
-                 'investigation_iterations':{'research':0,'investment':0,'sentiment':0},
-                 'trace':{'model_decisions':[],'tool_calls':[],'articles':{},'sentiment_results':[]}}
-        run.update(label=label,repeat=repeat,variant=variant)
-        run['deterministic']=deterministic_metrics(case,run)
-        write_json(args.output/(label+'.json'),run) # Persist agent result before any optional judge.
-        write_json(args.output/(label+'.review.json'),manual_template(case,run))
-        items.append(run)
-        write_json(args.output/'index.json',[{'label':i['label'],'case_id':i['case_id'],'status':i['status']} for i in items])
-        save_summary(args.output,items,len(tasks))
-        progress('Answer saved; judging next' if args.judge else 'Answer saved')
+        run=next((item for item in items if item['label']==label),None)
+        if run is not None and (not args.judge or 'llm_judged' in run):
+            progress('Already recorded; skipping')
+            continue
+        if run is not None:
+            progress('Reusing saved answer; finishing pending judge')
+        else:
+            progress(f'Starting {case.id}: {case.question}')
+            try:
+                base=create_model()
+                run=run_case(case,base,args.budget,args.mode,variant=='enabled',args.target,progress=progress)
+            except Exception as error:
+                run={'case_id':case.id,'category':case.category,'question':case.question,'target':args.target,'mode':args.mode,
+                     'as_of':datetime.now(timezone.utc).date().isoformat(),'status':'error','workflow':None,'report':None,
+                     'errors':[{'type':type(error).__name__}],'telemetry':{'request_budget_used':0,'calls':[]},'latency_seconds':0,
+                     'investigation_iterations':{'research':0,'investment':0,'sentiment':0},
+                     'trace':{'model_decisions':[],'tool_calls':[],'articles':{},'sentiment_results':[]}}
+            run.update(label=label,repeat=repeat,variant=variant)
+            run['deterministic']=deterministic_metrics(case,run)
+            write_json(args.output/(label+'.json'),run) # Persist agent result before any optional judge.
+            write_json(args.output/(label+'.review.json'),manual_template(case,run))
+            items.append(run)
+            write_json(args.output/'index.json',[{'label':i['label'],'case_id':i['case_id'],'status':i['status']} for i in items])
+            save_summary(args.output,items,len(tasks))
+            progress('Answer saved; judging next' if args.judge else 'Answer saved')
         if args.judge:
             try:
                 from unittest.mock import patch

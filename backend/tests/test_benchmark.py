@@ -319,3 +319,38 @@ def test_fixture_scope_filter_exposes_missing_segment_evidence():
     result=registry.execute(ToolCall(name='get_sec_filings',arguments={'ticker':'MSFT','section':'risks','scope':'segment'}),{})
     assert result.status=='no_data'
     assert not result.evidence
+
+
+def test_resume_reuses_completed_results_without_model_calls(tmp_path,monkeypatch):
+    import app.evaluation.benchmark as benchmark
+    output=tmp_path/'resume'
+    monkeypatch.setattr(benchmark,'create_model',lambda *a,**k:ResearchModel())
+    command=['benchmark','--case','sec_filings-01','--output',str(output)]
+    monkeypatch.setattr('sys.argv',command);benchmark.main()
+    original=(output/'001-sec_filings-01-enabled-r1.json').read_bytes()
+    def forbidden(*a,**k):raise AssertionError('Completed case should not run again')
+    monkeypatch.setattr(benchmark,'create_model',forbidden)
+    monkeypatch.setattr('sys.argv',command+['--resume']);benchmark.main()
+    assert (output/'001-sec_filings-01-enabled-r1.json').read_bytes()==original
+    assert json.loads((output/'summary.json').read_text())['recorded_runs']==1
+    assert len(json.loads((output/'manifest.json').read_text())['resumptions'])==1
+
+
+def test_resume_finishes_pending_judge_without_repeating_agent(tmp_path,monkeypatch):
+    import app.evaluation.benchmark as benchmark
+    output=tmp_path/'pending'
+    command=['benchmark','--case','sec_filings-01','--judge','--output',str(output)]
+    monkeypatch.setattr(benchmark,'create_model',lambda *a,**k:Judge() if k.get('system_prompt') else ResearchModel())
+    monkeypatch.setattr('sys.argv',command);benchmark.main()
+    path=output/'001-sec_filings-01-enabled-r1.json'
+    run=json.loads(path.read_text());original=run['report'];del run['llm_judged'];path.write_text(json.dumps(run))
+    calls=[]
+    def factory(*a,**k):
+        calls.append(k)
+        assert k.get('system_prompt'), 'Agent must not rerun'
+        return Judge()
+    monkeypatch.setattr(benchmark,'create_model',factory)
+    monkeypatch.setattr('sys.argv',command+['--resume']);benchmark.main()
+    resumed=json.loads(path.read_text())
+    assert resumed['report']==original and len(calls)==1
+    assert resumed['llm_judged']['metrics']['task_completion']['rate']==1
