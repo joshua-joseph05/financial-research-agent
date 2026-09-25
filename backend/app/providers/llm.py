@@ -137,8 +137,11 @@ def response_schema(phase: str, context: dict, schema: type[BaseModel]) -> dict:
 
 
 class OllamaModel:
-    """Local inference only: fixed loopback endpoint, no cloud fallback or keys."""
+    """Local inference only: loopback or Docker host, no cloud fallback or keys."""
     def __init__(self, model: str | None = None, system_prompt: str | None = None):
+        self.base_url = os.environ.get("OLLAMA_BASE_URL", "http://127.0.0.1:11434").rstrip("/")
+        if self.base_url not in {"http://127.0.0.1:11434", "http://localhost:11434", "http://host.docker.internal:11434"}:
+            raise ValueError("OLLAMA_BASE_URL must use local Ollama or the Docker host on port 11434")
         self.system_prompt = system_prompt or SYSTEM
         self.model = model or os.environ.get("OLLAMA_MODEL", "gemma4:e4b")
         if "cloud" in self.model.lower() or "/" in self.model:
@@ -147,7 +150,7 @@ class OllamaModel:
     def respond(self, phase: str, context: dict, schema: type[T], timeout: float) -> T:
         output_schema = response_schema(phase, context, schema)
         # Ignore proxy environment variables; never forward local research to a proxy.
-        with httpx.Client(base_url="http://127.0.0.1:11434", trust_env=False,
+        with httpx.Client(base_url=self.base_url, trust_env=False,
                           follow_redirects=False, timeout=timeout) as client:
             details = client.post("/api/show", json={"model": self.model})
             details.raise_for_status()

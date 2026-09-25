@@ -138,6 +138,56 @@ measured coverage and known limits.
 
 ## Quick start
 
+### Run with Docker Compose
+
+Install and start Docker Desktop (or Docker Engine with Compose on Linux).
+Copy `.env.example` to `.env` if you do not already have one, then set
+`SEC_USER_AGENT` and your model configuration as described below. Compose reads
+that file automatically and passes credentials only to the backend at runtime.
+The build contexts exclude environment files, keys and local dependencies.
+
+```sh
+docker compose up --build -d
+docker compose ps
+```
+
+Open http://127.0.0.1:3000. Stop any existing local frontend/backend first,
+since Compose uses the same ports (3000 and 8000). Both published ports bind
+only to your computer's loopback interface. This is a local setup, not a public
+hosting configuration. No database, saved research volume, or model download
+is included in the images.
+
+For **local Ollama**, keep Ollama running on your host and download the model
+named in `OLLAMA_MODEL`. Compose connects through `host.docker.internal:11434`;
+native Python runs still default to `127.0.0.1:11434`. On Linux, the host gateway
+mapping is included, but Ollama must listen on an interface reachable from the
+Docker bridge; restrict access with your firewall. Check connectivity without
+spending model requests:
+
+```sh
+docker compose exec backend python -c "import urllib.request; print(urllib.request.urlopen('http://host.docker.internal:11434/api/tags', timeout=5).status)"
+```
+
+For **OpenRouter**, set `LLM_PROVIDER=openrouter` and `OPENROUTER_API_KEY` in
+`.env`; no Ollama process is needed. The existing free-model restriction remains.
+
+```sh
+docker compose logs -f backend
+docker compose down
+```
+
+After changing `.env`, rerun `docker compose up -d` to recreate services.
+After code changes, rerun `docker compose up --build -d`.
+Health checks verify HTTP availability, not model availability or data-provider
+quotas. The backend runs one worker because its run limit and state are in memory.
+The frontend uses Next.js standalone output and both containers run as non-root
+users. Browser requests go to the host's port 8000, not a Docker-only hostname.
+
+Setup follows the [Docker Compose networking documentation](https://docs.docker.com/compose/how-tos/networking/)
+and [Next.js standalone output documentation](https://nextjs.org/docs/app/api-reference/config/next-config-js/output).
+
+### Run without Docker
+
 ### 1. Install the backend
 
 Requires **Python 3.11+** and **Node.js 20.9+** with npm. Run these commands from
@@ -184,7 +234,7 @@ computer's resources. If `LLM_PROVIDER` is absent, the application defaults to
 Ollama. SEC contact identification is required for live SEC retrieval; it is not
 an API key.
 
-**The application does not automatically load `.env`.** Load it in the backend
+**For native runs, the application does not automatically load `.env`.** Load it in the backend
 terminal, then start the server:
 
 ```sh
@@ -320,7 +370,7 @@ cd frontend
 npm run build
 ```
 
-Latest implementation validation: **250 backend tests passed**, and the frontend
+Latest implementation validation: **254 backend tests passed**, and the frontend
 production build passed. Coverage includes graph routing, evidence attribution,
 calculation compatibility, provider failures, request budgets, source access
 restrictions, duplicate detection, exact quotes, unreviewed-claim rejection, and

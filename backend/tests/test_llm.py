@@ -160,3 +160,22 @@ def test_live_synthesis_cannot_generate_new_factual_prose():
     schema=response_schema('synthesize',{'data_mode':'SEC filings','findings':[{'id':'claim_a'}]},Synthesis)
     assert schema['properties']['answer']=={'const':''}
     assert schema['properties']['unresolved_requirements']['maxItems']==3
+
+
+def test_docker_host_ollama_endpoint(monkeypatch):
+    monkeypatch.setenv('OLLAMA_BASE_URL', 'http://host.docker.internal:11434/')
+    requests = []
+    def handler(request):
+        requests.append(request)
+        return httpx.Response(200, json={} if request.url.path == '/api/show' else {
+            'done': True, 'message': {'content': json.dumps({'companies': ['NVDA'], 'questions': ['Risks?']})}})
+    with patch('app.providers.llm.httpx.Client', side_effect=client_factory(handler)):
+        OllamaModel().respond('plan', {}, Plan, timeout=10)
+    assert all(r.url.host == 'host.docker.internal' for r in requests)
+
+
+@pytest.mark.parametrize('url', ['https://example.com', 'http://user:secret@localhost:11434', 'http://localhost:11434/proxy'])
+def test_remote_ollama_endpoint_rejected(monkeypatch, url):
+    monkeypatch.setenv('OLLAMA_BASE_URL', url)
+    with pytest.raises(ValueError, match='local Ollama'):
+        OllamaModel()
