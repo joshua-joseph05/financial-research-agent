@@ -1,0 +1,7 @@
+[
+ {"id":"basics","question":"What is diversification?","tickers":[],"rubric":["Explains spreading investments","Does not promise protection from all losses"]},
+ {"id":"risks","question":"What might I be overlooking about NVIDIA's growth?","tickers":["NVDA"],"rubric":["Explains customer concentration","Explains manufacturing constraints","Avoids unsupported risk rankings"]},
+ {"id":"margins","question":"Why have Microsoft's operating margins changed?","tickers":["MSFT"],"rubric":["Uses both periods and Python calculations","Separates management explanations from proven causality"]},
+ {"id":"comparison","question":"Compare Microsoft and NVIDIA for long-term investing.","tickers":["MSFT","NVDA"],"rubric":["Discusses both companies","Explains different risks","Does not infer fair value from growth"]},
+ {"id":"cashflow","question":"Does Microsoft's revenue growth translate into stronger operating cash flow?","tickers":["MSFT"],"rubric":["Retrieves cash-flow history","Compares compatible dates","Identifies any data gaps"]}
+]

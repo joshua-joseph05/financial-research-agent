@@ -1,0 +1,84 @@
+{
+  "NVDA": {
+    "name": "NVIDIA",
+    "financials": [
+      {
+        "period": "2024",
+        "revenue": "100",
+        "operating_income": "30"
+      },
+      {
+        "period": "2025",
+        "revenue": "150",
+        "operating_income": "60"
+      }
+    ],
+    "sections": {
+      "business": "The synthetic company sells accelerated computing platforms.",
+      "risks": "Growth depends on a small group of customers and constrained advanced packaging supply.",
+      "supply": "Advanced packaging constraints may limit shipments despite customer demand.",
+      "md&a": "Management attributes growth to accelerated computing demand; capacity remains a constraint."
+    }
+  },
+  "MSFT": {
+    "name": "Microsoft",
+    "financials": [
+      {
+        "period": "2024",
+        "revenue": "200",
+        "operating_income": "60"
+      },
+      {
+        "period": "2025",
+        "revenue": "240",
+        "operating_income": "84"
+      }
+    ],
+    "sections": {
+      "business": "The synthetic company sells cloud services and productivity software.",
+      "risks": "Infrastructure investment may increase depreciation and operating costs.",
+      "md&a": "Management attributes operating margin expansion to a shift toward higher margin cloud services and expense discipline.",
+      "depreciation": "Infrastructure depreciation could offset some future operating leverage."
+    }
+  },
+  "AMD": {
+    "name": "AMD",
+    "financials": [
+      {
+        "period": "2024",
+        "revenue": "80",
+        "operating_income": "8"
+      },
+      {
+        "period": "2025",
+        "revenue": "96",
+        "operating_income": "12"
+      }
+    ],
+    "sections": {
+      "business": "The synthetic company sells processors and accelerators.",
+      "risks": "Competition and dependence on external manufacturing may constrain growth.",
+      "md&a": "Management attributes revenue growth to server products, partly offset by weaker other products."
+    }
+  },
+  "AAPL": {
+    "name": "Apple",
+    "financials": [
+      {
+        "period": "2024",
+        "revenue": "300",
+        "operating_income": "90"
+      },
+      {
+        "period": "2025",
+        "revenue": "315",
+        "operating_income": "98"
+      }
+    ],
+    "sections": {
+      "business": "The synthetic company sells consumer devices and related services.",
+      "risks": "Regulatory changes could affect services economics. Revenue depends heavily on a flagship device category.",
+      "md&a": "Services mix supports profitability while device demand remains uncertain."
+    }
+  }
+}

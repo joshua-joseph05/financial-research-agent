@@ -1,0 +1,29 @@
+# Credentials and local configuration
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Python environments and generated files
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+*.egg-info/
+build/
+dist/
+.coverage
+htmlcov/
+
+# Frontend dependencies and builds
+node_modules/
+.next/
+out/
+*.tsbuildinfo
+
+# Local artifacts
+.DS_Store
+*.log
+work/
