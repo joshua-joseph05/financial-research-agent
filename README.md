@@ -49,7 +49,7 @@ LangGraph graphs. Investing education is a shorter branch inside the investment
 graph. The sentiment agent is a specialist the investment lead can consult when
 useful; it does not run for every question.
 
-### 1. From the question to the right workflow
+### From the question to the right workflow
 
 ```mermaid
 flowchart TD
@@ -70,30 +70,11 @@ FastAPI streams progress events while the selected workflow runs, then sends the
 final report. The original question reaches the workflow intact. Users do not
 select a workflow or manually enable the sentiment agent.
 
-### 2. How the investment lead investigates
+### How the investment lead investigates
 
 The graph first resolves companies, plans the research, and collects baseline
 financial, filing and market evidence. The **additional investigation loop** is
 agent-directed: the lead examines what it knows and chooses its next action.
-
-```mermaid
-flowchart TD
-    Start["Resolve companies and create a plan"] --> Baseline["Collect baseline financial, filing and market evidence"]
-    Baseline --> Lead{"Lead evaluates evidence and gaps"}
-    Lead -->|Need more company information| API["Call an API or filing tool"]
-    Lead -->|Need a calculation| Python["Run a deterministic Python analysis tool"]
-    Lead -->|Need recent investment commentary| Sentiment["Consult sentiment agent"]
-    API --> Evidence["Add observations and source IDs to run state"]
-    Python --> Evidence
-    Evidence --> Lead
-    Sentiment --> Brief["Return reviewed arguments, citations and follow-up questions"]
-    Brief --> Lead
-    Lead -->|Enough evidence or investigation limit reached| Draft["Draft conditional investment assessment"]
-    Draft --> Check{"Python validates claims and citations"}
-    Check -->|Correction needed and retry available| Draft
-    Check -->|Continue to source review| Review["LLM reviews claims against cited evidence"]
-    Review --> Final["Apply evidence gates and render report with limitations"]
-```
 
 A tool retrieves data or performs an operation. The sentiment agent has its own
 bounded search, reading and review loop, then returns a compact brief to the lead.
@@ -104,7 +85,7 @@ The loop is bounded by time, model requests and investigation decisions. Reachin
 a limit does **not** mean the evidence is sufficient: unresolved gaps remain in
 the report, and unsupported claims are withheld.
 
-### 3. How the other paths differ
+### How the other paths differ
 
 | Path | Main steps | Verification and result |
 | --- | --- | --- |
