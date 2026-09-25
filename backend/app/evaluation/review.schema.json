@@ -1,0 +1,278 @@
+{
+  "$defs": {
+    "ArgumentRating": {
+      "additionalProperties": false,
+      "properties": {
+        "argument_id": {
+          "title": "Argument Id",
+          "type": "string"
+        },
+        "support": {
+          "enum": [
+            "supported",
+            "contradicted",
+            "insufficient"
+          ],
+          "title": "Support",
+          "type": "string"
+        },
+        "attribution": {
+          "enum": [
+            "correct",
+            "incorrect",
+            "unassessed"
+          ],
+          "title": "Attribution",
+          "type": "string"
+        },
+        "stance": {
+          "enum": [
+            "faithful",
+            "unfaithful",
+            "unassessed"
+          ],
+          "title": "Stance",
+          "type": "string"
+        },
+        "reason": {
+          "maxLength": 500,
+          "minLength": 5,
+          "title": "Reason",
+          "type": "string"
+        }
+      },
+      "required": [
+        "argument_id",
+        "support",
+        "attribution",
+        "stance",
+        "reason"
+      ],
+      "title": "ArgumentRating",
+      "type": "object"
+    },
+    "ClaimRating": {
+      "additionalProperties": false,
+      "properties": {
+        "claim_id": {
+          "title": "Claim Id",
+          "type": "string"
+        },
+        "verdict": {
+          "enum": [
+            "supported",
+            "contradicted",
+            "insufficient",
+            "nonfactual"
+          ],
+          "title": "Verdict",
+          "type": "string"
+        },
+        "evidence_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Evidence Ids",
+          "type": "array"
+        },
+        "reason": {
+          "maxLength": 500,
+          "minLength": 5,
+          "title": "Reason",
+          "type": "string"
+        }
+      },
+      "required": [
+        "claim_id",
+        "verdict",
+        "evidence_ids",
+        "reason"
+      ],
+      "title": "ClaimRating",
+      "type": "object"
+    },
+    "CriterionRating": {
+      "additionalProperties": false,
+      "properties": {
+        "criterion_id": {
+          "title": "Criterion Id",
+          "type": "string"
+        },
+        "verdict": {
+          "enum": [
+            "pass",
+            "fail",
+            "unassessed"
+          ],
+          "title": "Verdict",
+          "type": "string"
+        },
+        "reason": {
+          "maxLength": 500,
+          "minLength": 5,
+          "title": "Reason",
+          "type": "string"
+        }
+      },
+      "required": [
+        "criterion_id",
+        "verdict",
+        "reason"
+      ],
+      "title": "CriterionRating",
+      "type": "object"
+    },
+    "SentimentRating": {
+      "additionalProperties": false,
+      "properties": {
+        "sources": {
+          "items": {
+            "$ref": "#/$defs/SourceRating"
+          },
+          "title": "Sources",
+          "type": "array"
+        },
+        "arguments": {
+          "items": {
+            "$ref": "#/$defs/ArgumentRating"
+          },
+          "title": "Arguments",
+          "type": "array"
+        }
+      },
+      "required": [
+        "sources",
+        "arguments"
+      ],
+      "title": "SentimentRating",
+      "type": "object"
+    },
+    "SourceRating": {
+      "additionalProperties": false,
+      "properties": {
+        "source_id": {
+          "title": "Source Id",
+          "type": "string"
+        },
+        "relevance": {
+          "enum": [
+            "relevant",
+            "irrelevant",
+            "unassessed"
+          ],
+          "title": "Relevance",
+          "type": "string"
+        },
+        "reason": {
+          "maxLength": 500,
+          "minLength": 5,
+          "title": "Reason",
+          "type": "string"
+        }
+      },
+      "required": [
+        "source_id",
+        "relevance",
+        "reason"
+      ],
+      "title": "SourceRating",
+      "type": "object"
+    },
+    "TaskRating": {
+      "additionalProperties": false,
+      "properties": {
+        "criteria": {
+          "items": {
+            "$ref": "#/$defs/CriterionRating"
+          },
+          "title": "Criteria",
+          "type": "array"
+        },
+        "tool_appropriateness": {
+          "enum": [
+            "appropriate",
+            "inappropriate",
+            "unassessed"
+          ],
+          "title": "Tool Appropriateness",
+          "type": "string"
+        },
+        "tool_reason": {
+          "maxLength": 500,
+          "minLength": 5,
+          "title": "Tool Reason",
+          "type": "string"
+        }
+      },
+      "required": [
+        "criteria",
+        "tool_appropriateness",
+        "tool_reason"
+      ],
+      "title": "TaskRating",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "method": {
+      "const": "manual",
+      "default": "manual",
+      "title": "Method",
+      "type": "string"
+    },
+    "reviewer": {
+      "title": "Reviewer",
+      "type": "string"
+    },
+    "rubric_version": {
+      "default": "1.0",
+      "title": "Rubric Version",
+      "type": "string"
+    },
+    "task": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/TaskRating"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "claims": {
+      "items": {
+        "$ref": "#/$defs/ClaimRating"
+      },
+      "title": "Claims",
+      "type": "array"
+    },
+    "sentiment": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/SentimentRating"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "packet": {
+      "additionalProperties": true,
+      "title": "Packet",
+      "type": "object"
+    },
+    "instructions": {
+      "default": "",
+      "title": "Instructions",
+      "type": "string"
+    }
+  },
+  "required": [
+    "reviewer"
+  ],
+  "title": "HumanReview",
+  "type": "object"
+}

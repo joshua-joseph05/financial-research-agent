@@ -414,40 +414,42 @@ cd frontend
 npm run build
 ```
 
-Latest implementation validation: **254 backend tests passed**, and the frontend
+Latest implementation validation: **290 backend tests passed**, and the frontend
 production build passed. Coverage includes graph routing, evidence attribution,
 calculation compatibility, provider failures, request budgets, source access
 restrictions, duplicate detection, exact quotes, unreviewed-claim rejection, and
 compact sentiment handoff to the lead.
 These checks do not establish answer quality or investment performance.
 
-### Does sentiment consultation improve results?
+### Evaluate research quality
 
-The evaluation harness compares lead-only and sentiment-enabled runs using the same
-questions, fictional frozen evidence, and model-request budget. Its financial
-fixtures do not yet include sentiment articles, so it cannot establish sentiment
-quality; use the separate live smoke check for source integration. It writes usage
-metrics, reports, and a blind human-review worksheet. Quality criteria include
-coverage, citation support, numerical accuracy, readability, and unsupported
-claims.
+The [evaluation framework](backend/app/evaluation/README.md) includes **90 labeled
+questions across nine categories**, frozen failure scenarios, the actual unified
+router and graphs, and a separate sentiment-agent target. It saves each report,
+route, tool result, citation, calculation, investigation trace, latency and model
+usage alongside aggregate summaries.
+
+Deterministic checks cover tool labels, calculation accuracy and citation
+integrity. A separate structured LLM judge or human reviewer assesses task
+completion, claim support, unsupported claims and sentiment fidelity. Missing
+assessments remain unassessed; the agent's own verification is not ground truth.
 
 ```sh
-# Preview the request budget without calling an LLM.
-python -m app.evaluation.compare --case risks --budget 8 --output work/eval-risks --dry-run
+# Preview one local/frozen run and its separate judge; no requests are made.
+python -m app.evaluation.benchmark --case education-01 --budget 8 --judge --judge-budget 8 --output work/eval-smoke --dry-run
 
-# Run one paired comparison: up to 16 model requests in total.
-python -m app.evaluation.compare --case risks --budget 8 --output work/eval-risks
+# Run after configuring your local or free hosted model.
+python -m app.evaluation.benchmark --case education-01 --budget 8 --judge --judge-budget 8 --output work/eval-smoke
 
-# After scoring blind-review.json, summarize without further model calls.
-python -m app.evaluation.summarize work/eval-risks
+# Compare sentiment disabled/enabled on the same question (up to 96 requests).
+python -m app.evaluation.benchmark --case sentiment_news-01 --sentiment paired --judge --max-requests 96 --output work/eval-pair
 ```
 
-Check available quota before a live comparison and use a fresh output directory.
-Evaluation artifacts are explicitly saved by this command; normal application
-runs do not persist research findings. See the
-[evaluation guide](backend/app/evaluation/README.md) for scoring and experimental
-limitations. **A live quality comparison of sentiment consultation has not yet been
-completed; improvement over a single agent is unproven.**
+Use a fresh output directory. Evaluation commands explicitly save artifacts;
+normal application runs still keep findings only in memory. The guide documents
+full-suite commands, metric formulas, manual review, request budgets and known
+biases. **The framework enables comparisons; it does not establish that the
+sentiment agent improves answers or that this system outperforms another model.**
 
 ## Current limitations
 

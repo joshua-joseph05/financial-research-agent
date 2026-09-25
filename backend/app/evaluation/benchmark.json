@@ -1,0 +1,3205 @@
+{
+  "version": "1.0",
+  "fixture_as_of": "2026-09-23",
+  "label_provenance": "Authored expectations; review and version labels before drawing conclusions.",
+  "cases": [
+    {
+      "id": "financial_data-01",
+      "category": "financial_data",
+      "question": "What were Microsoft\u2019s revenue and operating income in fiscal 2025?",
+      "tickers": [
+        "MSFT"
+      ],
+      "expected_workflows": [
+        "research"
+      ],
+      "required_tool_groups": [
+        [
+          "get_financials",
+          "get_financial_metric_history"
+        ]
+      ],
+      "allowed_tools": [
+        "get_company_profile",
+        "get_financials",
+        "get_financial_metric_history"
+      ],
+      "criteria": [
+        "Report both requested metrics with their fiscal period and units.",
+        "Use retrieved values rather than model memory."
+      ],
+      "expected_outcome": "answer",
+      "scenario": "normal",
+      "sentiment_target": null
+    },
+    {
+      "id": "financial_data-02",
+      "category": "financial_data",
+      "question": "What were NVIDIA\u2019s revenue and operating income in fiscal 2025?",
+      "tickers": [
+        "NVDA"
+      ],
+      "expected_workflows": [
+        "research"
+      ],
+      "required_tool_groups": [
+        [
+          "get_financials",
+          "get_financial_metric_history"
+        ]
+      ],
+      "allowed_tools": [
+        "get_company_profile",
+        "get_financials",
+        "get_financial_metric_history"
+      ],
+      "criteria": [
+        "Report both requested metrics with their fiscal period and units.",
+        "Use retrieved values rather than model memory."
+      ],
+      "expected_outcome": "answer",
+      "scenario": "normal",
+      "sentiment_target": null
+    },
+    {
+      "id": "financial_data-03",
+      "category": "financial_data",
+      "question": "What were Apple\u2019s revenue and operating income in fiscal 2025?",
+      "tickers": [
+        "AAPL"
+      ],
+      "expected_workflows": [
+        "research"
+      ],
+      "required_tool_groups": [
+        [
+          "get_financials",
+          "get_financial_metric_history"
+        ]
+      ],
+      "allowed_tools": [
+        "get_company_profile",
+        "get_financials",
+        "get_financial_metric_history"
+      ],
+      "criteria": [
+        "Report both requested metrics with their fiscal period and units.",
+        "Use retrieved values rather than model memory."
+      ],
+      "expected_outcome": "answer",
+      "scenario": "normal",
+      "sentiment_target": null
+    },
+    {
+      "id": "financial_data-04",
+      "category": "financial_data",
+      "question": "What were AMD\u2019s revenue and operating income in fiscal 2025?",
+      "tickers": [
+        "AMD"
+      ],
+      "expected_workflows": [
+        "research"
+      ],
+      "required_tool_groups": [
+        [
+          "get_financials",
+          "get_financial_metric_history"
+        ]
+      ],
+      "allowed_tools": [
+        "get_company_profile",
+        "get_financials",
+        "get_financial_metric_history"
+      ],
+      "criteria": [
+        "Report both requested metrics with their fiscal period and units.",
+        "Use retrieved values rather than model memory."
+      ],
+      "expected_outcome": "answer",
+      "scenario": "normal",
+      "sentiment_target": null
+    },
+    {
+      "id": "financial_data-05",
+      "category": "financial_data",
+      "question": "Show Microsoft\u2019s annual operating cash flow history for the last two reported years.",
+      "tickers": [
+        "MSFT"
+      ],
+      "expected_workflows": [
+        "research"
+      ],
+      "required_tool_groups": [
+        [
+          "get_financial_metric_history"
+        ]
+      ],
+      "allowed_tools": [
+        "get_company_profile",
+        "get_financial_metric_history"
+      ],
+      "criteria": [
+        "Retrieve the requested metric for both available annual periods.",
+        "Do not silently substitute a different metric."
+      ],
+      "expected_outcome": "answer",
+      "scenario": "normal",
+      "sentiment_target": null
+    },
+    {
+      "id": "financial_data-06",
+      "category": "financial_data",
+      "question": "Show NVIDIA\u2019s annual net income history for the last two reported years.",
+      "tickers": [
+        "NVDA"
+      ],
+      "expected_workflows": [
+        "research"
+      ],
+      "required_tool_groups": [
+        [
+          "get_financial_metric_history"
+        ]
+      ],
+      "allowed_tools": [
+        "get_company_profile",
+        "get_financial_metric_history"
+      ],
+      "criteria": [
+        "Retrieve the requested metric for both available annual periods.",
+        "Do not silently substitute a different metric."
+      ],
+      "expected_outcome": "answer",
+      "scenario": "normal",
+      "sentiment_target": null
+    },
+    {
+      "id": "financial_data-07",
+      "category": "financial_data",
+      "question": "Show Apple\u2019s annual capital expenditure history for the last two reported years.",
+      "tickers": [
+        "AAPL"
+      ],
+      "expected_workflows": [
+        "research"
+      ],
+      "required_tool_groups": [
+        [
+          "get_financial_metric_history"
+        ]
+      ],
+      "allowed_tools": [
+        "get_company_profile",
+        "get_financial_metric_history"
+      ],
+      "criteria": [
+        "Retrieve the requested metric for both available annual periods.",
+        "Do not silently substitute a different metric."
+      ],
+      "expected_outcome": "answer",
+      "scenario": "normal",
+      "sentiment_target": null
+    },
+    {
+      "id": "financial_data-08",
+      "category": "financial_data",
+      "question": "Show AMD\u2019s annual revenue history for the last two reported years.",
+      "tickers": [
+        "AMD"
+      ],
+      "expected_workflows": [
+        "research"
+      ],
+      "required_tool_groups": [
+        [
+          "get_financial_metric_history"
+        ]
+      ],
+      "allowed_tools": [
+        "get_company_profile",
+        "get_financial_metric_history"
+      ],
+      "criteria": [
+        "Retrieve the requested metric for both available annual periods.",
+        "Do not silently substitute a different metric."
+      ],
+      "expected_outcome": "answer",
+      "scenario": "normal",
+      "sentiment_target": null
+    },
+    {
+      "id": "financial_data-09",
+      "category": "financial_data",
+      "question": "What is the latest available Microsoft share price, and when was it recorded?",
+      "tickers": [
+        "MSFT"
+      ],
+      "expected_workflows": [
+        "research"
+      ],
+      "required_tool_groups": [
+        [
+          "get_market_data"
+        ]
+      ],
+      "allowed_tools": [
+        "get_company_profile",
+        "get_market_data"
+      ],
+      "criteria": [
+        "Give the dated close, currency and delayed-data limitation; do not call it a live quote."
+      ],
+      "expected_outcome": "answer",
+      "scenario": "normal",
+      "sentiment_target": null
+    },
+    {
+      "id": "financial_data-10",
+      "category": "financial_data",
+      "question": "Cross-check NVIDIA\u2019s fiscal 2025 revenue against its filing.",
+      "tickers": [
+        "NVDA"
+      ],
+      "expected_workflows": [
+        "research"
+      ],
+      "required_tool_groups": [
+        [
+          "get_financials",
+          "get_financial_metric_history"
+        ],
+        [
+          "reconcile_financial_figures"
+        ]
+      ],
+      "allowed_tools": [
+        "get_company_profile",
+        "get_financials",
+        "get_financial_metric_history",
+        "reconcile_financial_figures"
+      ],
+      "criteria": [
+        "Use the original filing reconciliation tool.",
+        "Report match, mismatch or unresolved accurately."
+      ],
+      "expected_outcome": "answer",
+      "scenario": "normal",
+      "sentiment_target": null
+    },
+    {
+      "id": "sec_filings-01",
+      "category": "sec_filings",
+      "question": "What growth risks does Microsoft disclose in its annual filing?",
+      "tickers": [
+        "MSFT"
+      ],
+      "expected_workflows": [
+        "research"
+      ],
+      "required_tool_groups": [
+        [
+          "get_sec_filings",
+          "search_sec_filings"
+        ]
+      ],
+      "allowed_tools": [
+        "get_company_profile",
+        "get_sec_filings",
+        "search_sec_filings"
+      ],
+      "criteria": [
+        "Cite disclosed risks and distinguish potential outcomes from events that occurred.",
+        "Do not claim a quantitative ranking without evidence."
+      ],
+      "expected_outcome": "answer",
+      "scenario": "normal",
+      "sentiment_target": null
+    },
+    {
+      "id": "sec_filings-02",
+      "category": "sec_filings",
+      "question": "How does Microsoft describe its business in its annual filing?",
+      "tickers": [
+        "MSFT"
+      ],
+      "expected_workflows": [
+        "research"
+      ],
+      "required_tool_groups": [
+        [
+          "get_sec_filings",
+          "search_sec_filings"
+        ]
+      ],
+      "allowed_tools": [
+        "get_company_profile",
+        "get_sec_filings",
+        "search_sec_filings"
+      ],
+      "criteria": [
+        "Use the business section and explain how the company earns revenue.",
+        "Avoid unsupported market-share claims."
+      ],
+      "expected_outcome": "answer",
+      "scenario": "normal",
+      "sentiment_target": null
+    },
+    {
+      "id": "sec_filings-03",
+      "category": "sec_filings",
+      "question": "What growth risks does NVIDIA disclose in its annual filing?",
+      "tickers": [
+        "NVDA"
+      ],
+      "expected_workflows": [
+        "research"
+      ],
+      "required_tool_groups": [
+        [
+          "get_sec_filings",
+          "search_sec_filings"
+        ]
+      ],
+      "allowed_tools": [
+        "get_company_profile",
+        "get_sec_filings",
+        "search_sec_filings"
+      ],
+      "criteria": [
+        "Cite disclosed risks and distinguish potential outcomes from events that occurred.",
+        "Do not claim a quantitative ranking without evidence."
+      ],
+      "expected_outcome": "answer",
+      "scenario": "normal",
+      "sentiment_target": null
+    },
+    {
+      "id": "sec_filings-04",
+      "category": "sec_filings",
+      "question": "How does NVIDIA describe its business in its annual filing?",
+      "tickers": [
+        "NVDA"
+      ],
+      "expected_workflows": [
+        "research"
+      ],
+      "required_tool_groups": [
+        [
+          "get_sec_filings",
+          "search_sec_filings"
+        ]
+      ],
+      "allowed_tools": [
+        "get_company_profile",
+        "get_sec_filings",
+        "search_sec_filings"
+      ],
+      "criteria": [
+        "Use the business section and explain how the company earns revenue.",
+        "Avoid unsupported market-share claims."
+      ],
+      "expected_outcome": "answer",
+      "scenario": "normal",
+      "sentiment_target": null
+    },
+    {
+      "id": "sec_filings-05",
+      "category": "sec_filings",
+      "question": "What growth risks does Apple disclose in its annual filing?",
+      "tickers": [
+        "AAPL"
+      ],
+      "expected_workflows": [
+        "research"
+      ],
+      "required_tool_groups": [
+        [
+          "get_sec_filings",
+          "search_sec_filings"
+        ]
+      ],
+      "allowed_tools": [
+        "get_company_profile",
+        "get_sec_filings",
+        "search_sec_filings"
+      ],
+      "criteria": [
+        "Cite disclosed risks and distinguish potential outcomes from events that occurred.",
+        "Do not claim a quantitative ranking without evidence."
+      ],
+      "expected_outcome": "answer",
+      "scenario": "normal",
+      "sentiment_target": null
+    },
+    {
+      "id": "sec_filings-06",
+      "category": "sec_filings",
+      "question": "How does Apple describe its business in its annual filing?",
+      "tickers": [
+        "AAPL"
+      ],
+      "expected_workflows": [
+        "research"
+      ],
+      "required_tool_groups": [
+        [
+          "get_sec_filings",
+          "search_sec_filings"
+        ]
+      ],
+      "allowed_tools": [
+        "get_company_profile",
+        "get_sec_filings",
+        "search_sec_filings"
+      ],
+      "criteria": [
+        "Use the business section and explain how the company earns revenue.",
+        "Avoid unsupported market-share claims."
+      ],
+      "expected_outcome": "answer",
+      "scenario": "normal",
+      "sentiment_target": null
+    },
+    {
+      "id": "sec_filings-07",
+      "category": "sec_filings",
+      "question": "What growth risks does AMD disclose in its annual filing?",
+      "tickers": [
+        "AMD"
+      ],
+      "expected_workflows": [
+        "research"
+      ],
+      "required_tool_groups": [
+        [
+          "get_sec_filings",
+          "search_sec_filings"
+        ]
+      ],
+      "allowed_tools": [
+        "get_company_profile",
+        "get_sec_filings",
+        "search_sec_filings"
+      ],
+      "criteria": [
+        "Cite disclosed risks and distinguish potential outcomes from events that occurred.",
+        "Do not claim a quantitative ranking without evidence."
+      ],
+      "expected_outcome": "answer",
+      "scenario": "normal",
+      "sentiment_target": null
+    },
+    {
+      "id": "sec_filings-08",
+      "category": "sec_filings",
+      "question": "How does AMD describe its business in its annual filing?",
+      "tickers": [
+        "AMD"
+      ],
+      "expected_workflows": [
+        "research"
+      ],
+      "required_tool_groups": [
+        [
+          "get_sec_filings",
+          "search_sec_filings"
+        ]
+      ],
+      "allowed_tools": [
+        "get_company_profile",
+        "get_sec_filings",
+        "search_sec_filings"
+      ],
+      "criteria": [
+        "Use the business section and explain how the company earns revenue.",
+        "Avoid unsupported market-share claims."
+      ],
+      "expected_outcome": "answer",
+      "scenario": "normal",
+      "sentiment_target": null
+    },
+    {
+      "id": "sec_filings-09",
+      "category": "sec_filings",
+      "question": "What did Microsoft management say caused its fiscal 2025 margin change?",
+      "tickers": [
+        "MSFT"
+      ],
+      "expected_workflows": [
+        "research"
+      ],
+      "required_tool_groups": [
+        [
+          "get_financials",
+          "get_financial_metric_history"
+        ],
+        [
+          "calculate_financial_metrics"
+        ],
+        [
+          "get_sec_filings",
+          "search_sec_filings"
+        ]
+      ],
+      "allowed_tools": [
+        "get_company_profile",
+        "get_financials",
+        "get_financial_metric_history",
+        "calculate_financial_metrics",
+        "get_sec_filings",
+        "search_sec_filings"
+      ],
+      "criteria": [
+        "Calculate the change and attribute the historical explanation to management.",
+        "Keep company-wide and segment explanations distinct."
+      ],
+      "expected_outcome": "answer",
+      "scenario": "normal",
+      "sentiment_target": null
+    },
+    {
+      "id": "sec_filings-10",
+      "category": "sec_filings",
+      "question": "What did NVIDIA report in its recent earnings announcement, and what was only guidance?",
+      "tickers": [
+        "NVDA"
+      ],
+      "expected_workflows": [
+        "research"
+      ],
+      "required_tool_groups": [
+        [
+          "get_earnings_information"
+        ]
+      ],
+      "allowed_tools": [
+        "get_company_profile",
+        "get_earnings_information"
+      ],
+      "criteria": [
+        "Separate reported results from management forecasts and cite the release."
+      ],
+      "expected_outcome": "answer",
+      "scenario": "normal",
+      "sentiment_target": null
+    },
+    {
+      "id": "calculations-01",
+      "category": "calculations",
+      "question": "Calculate Microsoft\u2019s fiscal 2025 operating margin.",
+      "tickers": [
+        "MSFT"
+      ],
+      "expected_workflows": [
+        "research"
+      ],
+      "required_tool_groups": [
+        [
+          "get_financials",
+          "get_financial_metric_history"
+        ],
+        [
+          "calculate_financial_metrics"
+        ]
+      ],
+      "allowed_tools": [
+        "get_company_profile",
+        "get_financials",
+        "get_financial_metric_history",
+        "calculate_financial_metrics"
+      ],
+      "criteria": [
+        "Use operating income divided by revenue, multiplied by 100.",
+        "Use matching company, period and units; cite calculation inputs."
+      ],
+      "expected_outcome": "answer",
+      "scenario": "normal",
+      "sentiment_target": null
+    },
+    {
+      "id": "calculations-02",
+      "category": "calculations",
+      "question": "How much did Microsoft\u2019s revenue grow from fiscal 2024 to 2025?",
+      "tickers": [
+        "MSFT"
+      ],
+      "expected_workflows": [
+        "research"
+      ],
+      "required_tool_groups": [
+        [
+          "get_financials",
+          "get_financial_metric_history"
+        ],
+        [
+          "calculate_financial_metrics"
+        ]
+      ],
+      "allowed_tools": [
+        "get_company_profile",
+        "get_financials",
+        "get_financial_metric_history",
+        "calculate_financial_metrics"
+      ],
+      "criteria": [
+        "Calculate (new minus old) divided by old, as a percent.",
+        "Use compatible annual periods and preserve source lineage."
+      ],
+      "expected_outcome": "answer",
+      "scenario": "normal",
+      "sentiment_target": null
+    },
+    {
+      "id": "calculations-03",
+      "category": "calculations",
+      "question": "Calculate NVIDIA\u2019s fiscal 2025 operating margin.",
+      "tickers": [
+        "NVDA"
+      ],
+      "expected_workflows": [
+        "research"
+      ],
+      "required_tool_groups": [
+        [
+          "get_financials",
+          "get_financial_metric_history"
+        ],
+        [
+          "calculate_financial_metrics"
+        ]
+      ],
+      "allowed_tools": [
+        "get_company_profile",
+        "get_financials",
+        "get_financial_metric_history",
+        "calculate_financial_metrics"
+      ],
+      "criteria": [
+        "Use operating income divided by revenue, multiplied by 100.",
+        "Use matching company, period and units; cite calculation inputs."
+      ],
+      "expected_outcome": "answer",
+      "scenario": "normal",
+      "sentiment_target": null
+    },
+    {
+      "id": "calculations-04",
+      "category": "calculations",
+      "question": "How much did NVIDIA\u2019s revenue grow from fiscal 2024 to 2025?",
+      "tickers": [
+        "NVDA"
+      ],
+      "expected_workflows": [
+        "research"
+      ],
+      "required_tool_groups": [
+        [
+          "get_financials",
+          "get_financial_metric_history"
+        ],
+        [
+          "calculate_financial_metrics"
+        ]
+      ],
+      "allowed_tools": [
+        "get_company_profile",
+        "get_financials",
+        "get_financial_metric_history",
+        "calculate_financial_metrics"
+      ],
+      "criteria": [
+        "Calculate (new minus old) divided by old, as a percent.",
+        "Use compatible annual periods and preserve source lineage."
+      ],
+      "expected_outcome": "answer",
+      "scenario": "normal",
+      "sentiment_target": null
+    },
+    {
+      "id": "calculations-05",
+      "category": "calculations",
+      "question": "Calculate Apple\u2019s fiscal 2025 operating margin.",
+      "tickers": [
+        "AAPL"
+      ],
+      "expected_workflows": [
+        "research"
+      ],
+      "required_tool_groups": [
+        [
+          "get_financials",
+          "get_financial_metric_history"
+        ],
+        [
+          "calculate_financial_metrics"
+        ]
+      ],
+      "allowed_tools": [
+        "get_company_profile",
+        "get_financials",
+        "get_financial_metric_history",
+        "calculate_financial_metrics"
+      ],
+      "criteria": [
+        "Use operating income divided by revenue, multiplied by 100.",
+        "Use matching company, period and units; cite calculation inputs."
+      ],
+      "expected_outcome": "answer",
+      "scenario": "normal",
+      "sentiment_target": null
+    },
+    {
+      "id": "calculations-06",
+      "category": "calculations",
+      "question": "How much did Apple\u2019s revenue grow from fiscal 2024 to 2025?",
+      "tickers": [
+        "AAPL"
+      ],
+      "expected_workflows": [
+        "research"
+      ],
+      "required_tool_groups": [
+        [
+          "get_financials",
+          "get_financial_metric_history"
+        ],
+        [
+          "calculate_financial_metrics"
+        ]
+      ],
+      "allowed_tools": [
+        "get_company_profile",
+        "get_financials",
+        "get_financial_metric_history",
+        "calculate_financial_metrics"
+      ],
+      "criteria": [
+        "Calculate (new minus old) divided by old, as a percent.",
+        "Use compatible annual periods and preserve source lineage."
+      ],
+      "expected_outcome": "answer",
+      "scenario": "normal",
+      "sentiment_target": null
+    },
+    {
+      "id": "calculations-07",
+      "category": "calculations",
+      "question": "Calculate AMD\u2019s fiscal 2025 operating margin.",
+      "tickers": [
+        "AMD"
+      ],
+      "expected_workflows": [
+        "research"
+      ],
+      "required_tool_groups": [
+        [
+          "get_financials",
+          "get_financial_metric_history"
+        ],
+        [
+          "calculate_financial_metrics"
+        ]
+      ],
+      "allowed_tools": [
+        "get_company_profile",
+        "get_financials",
+        "get_financial_metric_history",
+        "calculate_financial_metrics"
+      ],
+      "criteria": [
+        "Use operating income divided by revenue, multiplied by 100.",
+        "Use matching company, period and units; cite calculation inputs."
+      ],
+      "expected_outcome": "answer",
+      "scenario": "normal",
+      "sentiment_target": null
+    },
+    {
+      "id": "calculations-08",
+      "category": "calculations",
+      "question": "How much did AMD\u2019s revenue grow from fiscal 2024 to 2025?",
+      "tickers": [
+        "AMD"
+      ],
+      "expected_workflows": [
+        "research"
+      ],
+      "required_tool_groups": [
+        [
+          "get_financials",
+          "get_financial_metric_history"
+        ],
+        [
+          "calculate_financial_metrics"
+        ]
+      ],
+      "allowed_tools": [
+        "get_company_profile",
+        "get_financials",
+        "get_financial_metric_history",
+        "calculate_financial_metrics"
+      ],
+      "criteria": [
+        "Calculate (new minus old) divided by old, as a percent.",
+        "Use compatible annual periods and preserve source lineage."
+      ],
+      "expected_outcome": "answer",
+      "scenario": "normal",
+      "sentiment_target": null
+    },
+    {
+      "id": "calculations-09",
+      "category": "calculations",
+      "question": "How many percentage points did Microsoft\u2019s operating margin change between fiscal 2024 and 2025?",
+      "tickers": [
+        "MSFT"
+      ],
+      "expected_workflows": [
+        "research"
+      ],
+      "required_tool_groups": [
+        [
+          "get_financials",
+          "get_financial_metric_history"
+        ],
+        [
+          "calculate_financial_metrics"
+        ]
+      ],
+      "allowed_tools": [
+        "get_company_profile",
+        "get_financials",
+        "get_financial_metric_history",
+        "calculate_financial_metrics"
+      ],
+      "criteria": [
+        "Calculate both margins and their percentage-point difference; do not call it percent growth."
+      ],
+      "expected_outcome": "answer",
+      "scenario": "normal",
+      "sentiment_target": null
+    },
+    {
+      "id": "calculations-10",
+      "category": "calculations",
+      "question": "Did Microsoft\u2019s operating cash flow grow at the same rate as revenue in fiscal 2025?",
+      "tickers": [
+        "MSFT"
+      ],
+      "expected_workflows": [
+        "research"
+      ],
+      "required_tool_groups": [
+        [
+          "get_financial_metric_history"
+        ],
+        [
+          "calculate_financial_metrics"
+        ]
+      ],
+      "allowed_tools": [
+        "get_company_profile",
+        "get_financials",
+        "get_financial_metric_history",
+        "calculate_financial_metrics"
+      ],
+      "criteria": [
+        "Compute both growth rates and recognize falling cash flow despite rising revenue.",
+        "Do not infer cash-flow quality from revenue alone."
+      ],
+      "expected_outcome": "answer",
+      "scenario": "normal",
+      "sentiment_target": null
+    },
+    {
+      "id": "comparisons-01",
+      "category": "comparisons",
+      "question": "Compare Microsoft and NVIDIA on annual revenue growth and operating margins.",
+      "tickers": [
+        "MSFT",
+        "NVDA"
+      ],
+      "expected_workflows": [
+        "research"
+      ],
+      "required_tool_groups": [
+        [
+          "compare_companies",
+          "get_financials",
+          "get_financial_metric_history"
+        ],
+        [
+          "calculate_financial_metrics"
+        ]
+      ],
+      "allowed_tools": [
+        "get_company_profile",
+        "get_financials",
+        "get_financial_metric_history",
+        "calculate_financial_metrics",
+        "compare_companies"
+      ],
+      "criteria": [
+        "Cover both companies using compatible periods.",
+        "Explain that growth and margins alone do not establish investment value."
+      ],
+      "expected_outcome": "answer",
+      "scenario": "normal",
+      "sentiment_target": null
+    },
+    {
+      "id": "comparisons-02",
+      "category": "comparisons",
+      "question": "What are the most important differences between Microsoft and NVIDIA as long-term investments?",
+      "tickers": [
+        "MSFT",
+        "NVDA"
+      ],
+      "expected_workflows": [
+        "investment"
+      ],
+      "required_tool_groups": [
+        [
+          "get_financials",
+          "get_financial_metric_history"
+        ],
+        [
+          "get_sec_filings",
+          "search_sec_filings"
+        ]
+      ],
+      "allowed_tools": [
+        "get_company_profile",
+        "get_financials",
+        "get_financial_metric_history",
+        "get_sec_filings",
+        "search_sec_filings",
+        "calculate_financial_metrics",
+        "compare_companies",
+        "get_earnings_information",
+        "get_news",
+        "get_market_data",
+        "reconcile_financial_figures",
+        "get_investing_guide",
+        "search_web",
+        "consult_sentiment",
+        "market_snapshot"
+      ],
+      "criteria": [
+        "Explain distinct businesses, financial strengths and risks for both companies.",
+        "Avoid declaring a winner without valuation and investor context."
+      ],
+      "expected_outcome": "answer",
+      "scenario": "normal",
+      "sentiment_target": null
+    },
+    {
+      "id": "comparisons-03",
+      "category": "comparisons",
+      "question": "Compare Apple and Microsoft on annual revenue growth and operating margins.",
+      "tickers": [
+        "AAPL",
+        "MSFT"
+      ],
+      "expected_workflows": [
+        "research"
+      ],
+      "required_tool_groups": [
+        [
+          "compare_companies",
+          "get_financials",
+          "get_financial_metric_history"
+        ],
+        [
+          "calculate_financial_metrics"
+        ]
+      ],
+      "allowed_tools": [
+        "get_company_profile",
+        "get_financials",
+        "get_financial_metric_history",
+        "calculate_financial_metrics",
+        "compare_companies"
+      ],
+      "criteria": [
+        "Cover both companies using compatible periods.",
+        "Explain that growth and margins alone do not establish investment value."
+      ],
+      "expected_outcome": "answer",
+      "scenario": "normal",
+      "sentiment_target": null
+    },
+    {
+      "id": "comparisons-04",
+      "category": "comparisons",
+      "question": "What are the most important differences between Apple and Microsoft as long-term investments?",
+      "tickers": [
+        "AAPL",
+        "MSFT"
+      ],
+      "expected_workflows": [
+        "investment"
+      ],
+      "required_tool_groups": [
+        [
+          "get_financials",
+          "get_financial_metric_history"
+        ],
+        [
+          "get_sec_filings",
+          "search_sec_filings"
+        ]
+      ],
+      "allowed_tools": [
+        "get_company_profile",
+        "get_financials",
+        "get_financial_metric_history",
+        "get_sec_filings",
+        "search_sec_filings",
+        "calculate_financial_metrics",
+        "compare_companies",
+        "get_earnings_information",
+        "get_news",
+        "get_market_data",
+        "reconcile_financial_figures",
+        "get_investing_guide",
+        "search_web",
+        "consult_sentiment",
+        "market_snapshot"
+      ],
+      "criteria": [
+        "Explain distinct businesses, financial strengths and risks for both companies.",
+        "Avoid declaring a winner without valuation and investor context."
+      ],
+      "expected_outcome": "answer",
+      "scenario": "normal",
+      "sentiment_target": null
+    },
+    {
+      "id": "comparisons-05",
+      "category": "comparisons",
+      "question": "Compare AMD and NVIDIA on annual revenue growth and operating margins.",
+      "tickers": [
+        "AMD",
+        "NVDA"
+      ],
+      "expected_workflows": [
+        "research"
+      ],
+      "required_tool_groups": [
+        [
+          "compare_companies",
+          "get_financials",
+          "get_financial_metric_history"
+        ],
+        [
+          "calculate_financial_metrics"
+        ]
+      ],
+      "allowed_tools": [
+        "get_company_profile",
+        "get_financials",
+        "get_financial_metric_history",
+        "calculate_financial_metrics",
+        "compare_companies"
+      ],
+      "criteria": [
+        "Cover both companies using compatible periods.",
+        "Explain that growth and margins alone do not establish investment value."
+      ],
+      "expected_outcome": "answer",
+      "scenario": "normal",
+      "sentiment_target": null
+    },
+    {
+      "id": "comparisons-06",
+      "category": "comparisons",
+      "question": "What are the most important differences between AMD and NVIDIA as long-term investments?",
+      "tickers": [
+        "AMD",
+        "NVDA"
+      ],
+      "expected_workflows": [
+        "investment"
+      ],
+      "required_tool_groups": [
+        [
+          "get_financials",
+          "get_financial_metric_history"
+        ],
+        [
+          "get_sec_filings",
+          "search_sec_filings"
+        ]
+      ],
+      "allowed_tools": [
+        "get_company_profile",
+        "get_financials",
+        "get_financial_metric_history",
+        "get_sec_filings",
+        "search_sec_filings",
+        "calculate_financial_metrics",
+        "compare_companies",
+        "get_earnings_information",
+        "get_news",
+        "get_market_data",
+        "reconcile_financial_figures",
+        "get_investing_guide",
+        "search_web",
+        "consult_sentiment",
+        "market_snapshot"
+      ],
+      "criteria": [
+        "Explain distinct businesses, financial strengths and risks for both companies.",
+        "Avoid declaring a winner without valuation and investor context."
+      ],
+      "expected_outcome": "answer",
+      "scenario": "normal",
+      "sentiment_target": null
+    },
+    {
+      "id": "comparisons-07",
+      "category": "comparisons",
+      "question": "Compare Apple and AMD on annual revenue growth and operating margins.",
+      "tickers": [
+        "AAPL",
+        "AMD"
+      ],
+      "expected_workflows": [
+        "research"
+      ],
+      "required_tool_groups": [
+        [
+          "compare_companies",
+          "get_financials",
+          "get_financial_metric_history"
+        ],
+        [
+          "calculate_financial_metrics"
+        ]
+      ],
+      "allowed_tools": [
+        "get_company_profile",
+        "get_financials",
+        "get_financial_metric_history",
+        "calculate_financial_metrics",
+        "compare_companies"
+      ],
+      "criteria": [
+        "Cover both companies using compatible periods.",
+        "Explain that growth and margins alone do not establish investment value."
+      ],
+      "expected_outcome": "answer",
+      "scenario": "normal",
+      "sentiment_target": null
+    },
+    {
+      "id": "comparisons-08",
+      "category": "comparisons",
+      "question": "What are the most important differences between Apple and AMD as long-term investments?",
+      "tickers": [
+        "AAPL",
+        "AMD"
+      ],
+      "expected_workflows": [
+        "investment"
+      ],
+      "required_tool_groups": [
+        [
+          "get_financials",
+          "get_financial_metric_history"
+        ],
+        [
+          "get_sec_filings",
+          "search_sec_filings"
+        ]
+      ],
+      "allowed_tools": [
+        "get_company_profile",
+        "get_financials",
+        "get_financial_metric_history",
+        "get_sec_filings",
+        "search_sec_filings",
+        "calculate_financial_metrics",
+        "compare_companies",
+        "get_earnings_information",
+        "get_news",
+        "get_market_data",
+        "reconcile_financial_figures",
+        "get_investing_guide",
+        "search_web",
+        "consult_sentiment",
+        "market_snapshot"
+      ],
+      "criteria": [
+        "Explain distinct businesses, financial strengths and risks for both companies.",
+        "Avoid declaring a winner without valuation and investor context."
+      ],
+      "expected_outcome": "answer",
+      "scenario": "normal",
+      "sentiment_target": null
+    },
+    {
+      "id": "comparisons-09",
+      "category": "comparisons",
+      "question": "Compare Microsoft and AMD on annual revenue growth and operating margins.",
+      "tickers": [
+        "MSFT",
+        "AMD"
+      ],
+      "expected_workflows": [
+        "research"
+      ],
+      "required_tool_groups": [
+        [
+          "compare_companies",
+          "get_financials",
+          "get_financial_metric_history"
+        ],
+        [
+          "calculate_financial_metrics"
+        ]
+      ],
+      "allowed_tools": [
+        "get_company_profile",
+        "get_financials",
+        "get_financial_metric_history",
+        "calculate_financial_metrics",
+        "compare_companies"
+      ],
+      "criteria": [
+        "Cover both companies using compatible periods.",
+        "Explain that growth and margins alone do not establish investment value."
+      ],
+      "expected_outcome": "answer",
+      "scenario": "normal",
+      "sentiment_target": null
+    },
+    {
+      "id": "comparisons-10",
+      "category": "comparisons",
+      "question": "What are the most important differences between Microsoft and AMD as long-term investments?",
+      "tickers": [
+        "MSFT",
+        "AMD"
+      ],
+      "expected_workflows": [
+        "investment"
+      ],
+      "required_tool_groups": [
+        [
+          "get_financials",
+          "get_financial_metric_history"
+        ],
+        [
+          "get_sec_filings",
+          "search_sec_filings"
+        ]
+      ],
+      "allowed_tools": [
+        "get_company_profile",
+        "get_financials",
+        "get_financial_metric_history",
+        "get_sec_filings",
+        "search_sec_filings",
+        "calculate_financial_metrics",
+        "compare_companies",
+        "get_earnings_information",
+        "get_news",
+        "get_market_data",
+        "reconcile_financial_figures",
+        "get_investing_guide",
+        "search_web",
+        "consult_sentiment",
+        "market_snapshot"
+      ],
+      "criteria": [
+        "Explain distinct businesses, financial strengths and risks for both companies.",
+        "Avoid declaring a winner without valuation and investor context."
+      ],
+      "expected_outcome": "answer",
+      "scenario": "normal",
+      "sentiment_target": null
+    },
+    {
+      "id": "open_research-01",
+      "category": "open_research",
+      "question": "I am interested in Microsoft. What should I understand about the business?",
+      "tickers": [
+        "MSFT"
+      ],
+      "expected_workflows": [
+        "research"
+      ],
+      "required_tool_groups": [
+        [
+          "get_sec_filings",
+          "search_sec_filings"
+        ]
+      ],
+      "allowed_tools": [
+        "get_company_profile",
+        "get_financials",
+        "get_financial_metric_history",
+        "get_sec_filings",
+        "search_sec_filings",
+        "calculate_financial_metrics",
+        "compare_companies",
+        "get_earnings_information",
+        "get_news",
+        "get_market_data",
+        "reconcile_financial_figures",
+        "get_investing_guide",
+        "search_web",
+        "consult_sentiment",
+        "market_snapshot"
+      ],
+      "criteria": [
+        "Explain business drivers and risks in beginner language.",
+        "Separate sourced facts from interpretations and remaining questions."
+      ],
+      "expected_outcome": "answer",
+      "scenario": "normal",
+      "sentiment_target": null
+    },
+    {
+      "id": "open_research-02",
+      "category": "open_research",
+      "question": "What might I be overlooking about Microsoft?",
+      "tickers": [
+        "MSFT"
+      ],
+      "expected_workflows": [
+        "research"
+      ],
+      "required_tool_groups": [
+        [
+          "get_sec_filings",
+          "search_sec_filings"
+        ]
+      ],
+      "allowed_tools": [
+        "get_company_profile",
+        "get_financials",
+        "get_financial_metric_history",
+        "get_sec_filings",
+        "search_sec_filings",
+        "calculate_financial_metrics",
+        "compare_companies",
+        "get_earnings_information",
+        "get_news",
+        "get_market_data",
+        "reconcile_financial_figures",
+        "get_investing_guide",
+        "search_web",
+        "consult_sentiment",
+        "market_snapshot"
+      ],
+      "criteria": [
+        "Identify material disclosed risks and data gaps without inventing a hidden scandal."
+      ],
+      "expected_outcome": "answer",
+      "scenario": "normal",
+      "sentiment_target": null
+    },
+    {
+      "id": "open_research-03",
+      "category": "open_research",
+      "question": "I am interested in NVIDIA. What should I understand about the business?",
+      "tickers": [
+        "NVDA"
+      ],
+      "expected_workflows": [
+        "research"
+      ],
+      "required_tool_groups": [
+        [
+          "get_sec_filings",
+          "search_sec_filings"
+        ]
+      ],
+      "allowed_tools": [
+        "get_company_profile",
+        "get_financials",
+        "get_financial_metric_history",
+        "get_sec_filings",
+        "search_sec_filings",
+        "calculate_financial_metrics",
+        "compare_companies",
+        "get_earnings_information",
+        "get_news",
+        "get_market_data",
+        "reconcile_financial_figures",
+        "get_investing_guide",
+        "search_web",
+        "consult_sentiment",
+        "market_snapshot"
+      ],
+      "criteria": [
+        "Explain business drivers and risks in beginner language.",
+        "Separate sourced facts from interpretations and remaining questions."
+      ],
+      "expected_outcome": "answer",
+      "scenario": "normal",
+      "sentiment_target": null
+    },
+    {
+      "id": "open_research-04",
+      "category": "open_research",
+      "question": "What might I be overlooking about NVIDIA?",
+      "tickers": [
+        "NVDA"
+      ],
+      "expected_workflows": [
+        "research"
+      ],
+      "required_tool_groups": [
+        [
+          "get_sec_filings",
+          "search_sec_filings"
+        ]
+      ],
+      "allowed_tools": [
+        "get_company_profile",
+        "get_financials",
+        "get_financial_metric_history",
+        "get_sec_filings",
+        "search_sec_filings",
+        "calculate_financial_metrics",
+        "compare_companies",
+        "get_earnings_information",
+        "get_news",
+        "get_market_data",
+        "reconcile_financial_figures",
+        "get_investing_guide",
+        "search_web",
+        "consult_sentiment",
+        "market_snapshot"
+      ],
+      "criteria": [
+        "Identify material disclosed risks and data gaps without inventing a hidden scandal."
+      ],
+      "expected_outcome": "answer",
+      "scenario": "normal",
+      "sentiment_target": null
+    },
+    {
+      "id": "open_research-05",
+      "category": "open_research",
+      "question": "I am interested in Apple. What should I understand about the business?",
+      "tickers": [
+        "AAPL"
+      ],
+      "expected_workflows": [
+        "research"
+      ],
+      "required_tool_groups": [
+        [
+          "get_sec_filings",
+          "search_sec_filings"
+        ]
+      ],
+      "allowed_tools": [
+        "get_company_profile",
+        "get_financials",
+        "get_financial_metric_history",
+        "get_sec_filings",
+        "search_sec_filings",
+        "calculate_financial_metrics",
+        "compare_companies",
+        "get_earnings_information",
+        "get_news",
+        "get_market_data",
+        "reconcile_financial_figures",
+        "get_investing_guide",
+        "search_web",
+        "consult_sentiment",
+        "market_snapshot"
+      ],
+      "criteria": [
+        "Explain business drivers and risks in beginner language.",
+        "Separate sourced facts from interpretations and remaining questions."
+      ],
+      "expected_outcome": "answer",
+      "scenario": "normal",
+      "sentiment_target": null
+    },
+    {
+      "id": "open_research-06",
+      "category": "open_research",
+      "question": "What might I be overlooking about Apple?",
+      "tickers": [
+        "AAPL"
+      ],
+      "expected_workflows": [
+        "research"
+      ],
+      "required_tool_groups": [
+        [
+          "get_sec_filings",
+          "search_sec_filings"
+        ]
+      ],
+      "allowed_tools": [
+        "get_company_profile",
+        "get_financials",
+        "get_financial_metric_history",
+        "get_sec_filings",
+        "search_sec_filings",
+        "calculate_financial_metrics",
+        "compare_companies",
+        "get_earnings_information",
+        "get_news",
+        "get_market_data",
+        "reconcile_financial_figures",
+        "get_investing_guide",
+        "search_web",
+        "consult_sentiment",
+        "market_snapshot"
+      ],
+      "criteria": [
+        "Identify material disclosed risks and data gaps without inventing a hidden scandal."
+      ],
+      "expected_outcome": "answer",
+      "scenario": "normal",
+      "sentiment_target": null
+    },
+    {
+      "id": "open_research-07",
+      "category": "open_research",
+      "question": "I am interested in AMD. What should I understand about the business?",
+      "tickers": [
+        "AMD"
+      ],
+      "expected_workflows": [
+        "research"
+      ],
+      "required_tool_groups": [
+        [
+          "get_sec_filings",
+          "search_sec_filings"
+        ]
+      ],
+      "allowed_tools": [
+        "get_company_profile",
+        "get_financials",
+        "get_financial_metric_history",
+        "get_sec_filings",
+        "search_sec_filings",
+        "calculate_financial_metrics",
+        "compare_companies",
+        "get_earnings_information",
+        "get_news",
+        "get_market_data",
+        "reconcile_financial_figures",
+        "get_investing_guide",
+        "search_web",
+        "consult_sentiment",
+        "market_snapshot"
+      ],
+      "criteria": [
+        "Explain business drivers and risks in beginner language.",
+        "Separate sourced facts from interpretations and remaining questions."
+      ],
+      "expected_outcome": "answer",
+      "scenario": "normal",
+      "sentiment_target": null
+    },
+    {
+      "id": "open_research-08",
+      "category": "open_research",
+      "question": "What might I be overlooking about AMD?",
+      "tickers": [
+        "AMD"
+      ],
+      "expected_workflows": [
+        "research"
+      ],
+      "required_tool_groups": [
+        [
+          "get_sec_filings",
+          "search_sec_filings"
+        ]
+      ],
+      "allowed_tools": [
+        "get_company_profile",
+        "get_financials",
+        "get_financial_metric_history",
+        "get_sec_filings",
+        "search_sec_filings",
+        "calculate_financial_metrics",
+        "compare_companies",
+        "get_earnings_information",
+        "get_news",
+        "get_market_data",
+        "reconcile_financial_figures",
+        "get_investing_guide",
+        "search_web",
+        "consult_sentiment",
+        "market_snapshot"
+      ],
+      "criteria": [
+        "Identify material disclosed risks and data gaps without inventing a hidden scandal."
+      ],
+      "expected_outcome": "answer",
+      "scenario": "normal",
+      "sentiment_target": null
+    },
+    {
+      "id": "open_research-09",
+      "category": "open_research",
+      "question": "Why have Microsoft\u2019s operating margins changed?",
+      "tickers": [
+        "MSFT"
+      ],
+      "expected_workflows": [
+        "research"
+      ],
+      "required_tool_groups": [
+        [
+          "get_financials",
+          "get_financial_metric_history"
+        ],
+        [
+          "calculate_financial_metrics"
+        ],
+        [
+          "get_sec_filings",
+          "search_sec_filings"
+        ]
+      ],
+      "allowed_tools": [
+        "get_company_profile",
+        "get_financials",
+        "get_financial_metric_history",
+        "get_sec_filings",
+        "search_sec_filings",
+        "calculate_financial_metrics",
+        "compare_companies",
+        "get_earnings_information",
+        "get_news",
+        "get_market_data",
+        "reconcile_financial_figures",
+        "get_investing_guide",
+        "search_web",
+        "consult_sentiment",
+        "market_snapshot"
+      ],
+      "criteria": [
+        "Include checked margin changes and attributed company-wide explanations.",
+        "A future risk is not evidence of historical causality."
+      ],
+      "expected_outcome": "answer",
+      "scenario": "normal",
+      "sentiment_target": null
+    },
+    {
+      "id": "open_research-10",
+      "category": "open_research",
+      "question": "What evidence would challenge an optimistic view of NVIDIA\u2019s growth?",
+      "tickers": [
+        "NVDA"
+      ],
+      "expected_workflows": [
+        "research"
+      ],
+      "required_tool_groups": [
+        [
+          "get_sec_filings",
+          "search_sec_filings"
+        ]
+      ],
+      "allowed_tools": [
+        "get_company_profile",
+        "get_financials",
+        "get_financial_metric_history",
+        "get_sec_filings",
+        "search_sec_filings",
+        "calculate_financial_metrics",
+        "compare_companies",
+        "get_earnings_information",
+        "get_news",
+        "get_market_data",
+        "reconcile_financial_figures",
+        "get_investing_guide",
+        "search_web",
+        "consult_sentiment",
+        "market_snapshot"
+      ],
+      "criteria": [
+        "Investigate concentration and supply risks.",
+        "Distinguish evidence against a thesis from a prediction that growth will stop."
+      ],
+      "expected_outcome": "answer",
+      "scenario": "normal",
+      "sentiment_target": null
+    },
+    {
+      "id": "investment-01",
+      "category": "investment",
+      "question": "Would Microsoft be worth researching for a ten-year investment?",
+      "tickers": [
+        "MSFT"
+      ],
+      "expected_workflows": [
+        "investment"
+      ],
+      "required_tool_groups": [
+        [
+          "get_financials",
+          "get_financial_metric_history"
+        ],
+        [
+          "get_sec_filings",
+          "search_sec_filings"
+        ]
+      ],
+      "allowed_tools": [
+        "get_company_profile",
+        "get_financials",
+        "get_financial_metric_history",
+        "get_sec_filings",
+        "search_sec_filings",
+        "calculate_financial_metrics",
+        "compare_companies",
+        "get_earnings_information",
+        "get_news",
+        "get_market_data",
+        "reconcile_financial_figures",
+        "get_investing_guide",
+        "search_web",
+        "consult_sentiment",
+        "market_snapshot"
+      ],
+      "criteria": [
+        "Use financial and filing evidence, not popularity alone.",
+        "Do not promise returns, predict a price bottom, or assume missing investor preferences.",
+        "State missing valuation or suitability evidence."
+      ],
+      "expected_outcome": "answer",
+      "scenario": "normal",
+      "sentiment_target": null
+    },
+    {
+      "id": "investment-02",
+      "category": "investment",
+      "question": "What should a beginner check before investing in NVIDIA?",
+      "tickers": [
+        "NVDA"
+      ],
+      "expected_workflows": [
+        "investment"
+      ],
+      "required_tool_groups": [
+        [
+          "get_financials",
+          "get_financial_metric_history"
+        ],
+        [
+          "get_sec_filings",
+          "search_sec_filings"
+        ]
+      ],
+      "allowed_tools": [
+        "get_company_profile",
+        "get_financials",
+        "get_financial_metric_history",
+        "get_sec_filings",
+        "search_sec_filings",
+        "calculate_financial_metrics",
+        "compare_companies",
+        "get_earnings_information",
+        "get_news",
+        "get_market_data",
+        "reconcile_financial_figures",
+        "get_investing_guide",
+        "search_web",
+        "consult_sentiment",
+        "market_snapshot"
+      ],
+      "criteria": [
+        "Use financial and filing evidence, not popularity alone.",
+        "Do not promise returns, predict a price bottom, or assume missing investor preferences.",
+        "State missing valuation or suitability evidence."
+      ],
+      "expected_outcome": "answer",
+      "scenario": "normal",
+      "sentiment_target": null
+    },
+    {
+      "id": "investment-03",
+      "category": "investment",
+      "question": "How should I evaluate Apple for long-term investing?",
+      "tickers": [
+        "AAPL"
+      ],
+      "expected_workflows": [
+        "investment"
+      ],
+      "required_tool_groups": [
+        [
+          "get_financials",
+          "get_financial_metric_history"
+        ],
+        [
+          "get_sec_filings",
+          "search_sec_filings"
+        ]
+      ],
+      "allowed_tools": [
+        "get_company_profile",
+        "get_financials",
+        "get_financial_metric_history",
+        "get_sec_filings",
+        "search_sec_filings",
+        "calculate_financial_metrics",
+        "compare_companies",
+        "get_earnings_information",
+        "get_news",
+        "get_market_data",
+        "reconcile_financial_figures",
+        "get_investing_guide",
+        "search_web",
+        "consult_sentiment",
+        "market_snapshot"
+      ],
+      "criteria": [
+        "Use financial and filing evidence, not popularity alone.",
+        "Do not promise returns, predict a price bottom, or assume missing investor preferences.",
+        "State missing valuation or suitability evidence."
+      ],
+      "expected_outcome": "answer",
+      "scenario": "normal",
+      "sentiment_target": null
+    },
+    {
+      "id": "investment-04",
+      "category": "investment",
+      "question": "What are the main risks of investing in AMD?",
+      "tickers": [
+        "AMD"
+      ],
+      "expected_workflows": [
+        "investment"
+      ],
+      "required_tool_groups": [
+        [
+          "get_financials",
+          "get_financial_metric_history"
+        ],
+        [
+          "get_sec_filings",
+          "search_sec_filings"
+        ]
+      ],
+      "allowed_tools": [
+        "get_company_profile",
+        "get_financials",
+        "get_financial_metric_history",
+        "get_sec_filings",
+        "search_sec_filings",
+        "calculate_financial_metrics",
+        "compare_companies",
+        "get_earnings_information",
+        "get_news",
+        "get_market_data",
+        "reconcile_financial_figures",
+        "get_investing_guide",
+        "search_web",
+        "consult_sentiment",
+        "market_snapshot"
+      ],
+      "criteria": [
+        "Use financial and filing evidence, not popularity alone.",
+        "Do not promise returns, predict a price bottom, or assume missing investor preferences.",
+        "State missing valuation or suitability evidence."
+      ],
+      "expected_outcome": "answer",
+      "scenario": "normal",
+      "sentiment_target": null
+    },
+    {
+      "id": "investment-05",
+      "category": "investment",
+      "question": "Compare Microsoft and Apple for someone investing over ten years.",
+      "tickers": [
+        "MSFT",
+        "AAPL"
+      ],
+      "expected_workflows": [
+        "investment"
+      ],
+      "required_tool_groups": [
+        [
+          "get_financials",
+          "get_financial_metric_history"
+        ],
+        [
+          "get_sec_filings",
+          "search_sec_filings"
+        ]
+      ],
+      "allowed_tools": [
+        "get_company_profile",
+        "get_financials",
+        "get_financial_metric_history",
+        "get_sec_filings",
+        "search_sec_filings",
+        "calculate_financial_metrics",
+        "compare_companies",
+        "get_earnings_information",
+        "get_news",
+        "get_market_data",
+        "reconcile_financial_figures",
+        "get_investing_guide",
+        "search_web",
+        "consult_sentiment",
+        "market_snapshot"
+      ],
+      "criteria": [
+        "Use financial and filing evidence, not popularity alone.",
+        "Do not promise returns, predict a price bottom, or assume missing investor preferences.",
+        "State missing valuation or suitability evidence."
+      ],
+      "expected_outcome": "answer",
+      "scenario": "normal",
+      "sentiment_target": null
+    },
+    {
+      "id": "investment-06",
+      "category": "investment",
+      "question": "What technology stocks could I research for long-term investing?",
+      "tickers": [],
+      "expected_workflows": [
+        "investment"
+      ],
+      "required_tool_groups": [
+        [
+          "get_financials",
+          "get_financial_metric_history"
+        ],
+        [
+          "get_sec_filings",
+          "search_sec_filings"
+        ]
+      ],
+      "allowed_tools": [
+        "get_company_profile",
+        "get_financials",
+        "get_financial_metric_history",
+        "get_sec_filings",
+        "search_sec_filings",
+        "calculate_financial_metrics",
+        "compare_companies",
+        "get_earnings_information",
+        "get_news",
+        "get_market_data",
+        "reconcile_financial_figures",
+        "get_investing_guide",
+        "search_web",
+        "consult_sentiment",
+        "market_snapshot"
+      ],
+      "criteria": [
+        "Use financial and filing evidence, not popularity alone.",
+        "Do not promise returns, predict a price bottom, or assume missing investor preferences.",
+        "State missing valuation or suitability evidence."
+      ],
+      "expected_outcome": "answer",
+      "scenario": "normal",
+      "sentiment_target": null
+    },
+    {
+      "id": "investment-07",
+      "category": "investment",
+      "question": "I need my money next year. What should I consider before buying Microsoft?",
+      "tickers": [
+        "MSFT"
+      ],
+      "expected_workflows": [
+        "investment"
+      ],
+      "required_tool_groups": [
+        [
+          "get_financials",
+          "get_financial_metric_history"
+        ],
+        [
+          "get_sec_filings",
+          "search_sec_filings"
+        ]
+      ],
+      "allowed_tools": [
+        "get_company_profile",
+        "get_financials",
+        "get_financial_metric_history",
+        "get_sec_filings",
+        "search_sec_filings",
+        "calculate_financial_metrics",
+        "compare_companies",
+        "get_earnings_information",
+        "get_news",
+        "get_market_data",
+        "reconcile_financial_figures",
+        "get_investing_guide",
+        "search_web",
+        "consult_sentiment",
+        "market_snapshot"
+      ],
+      "criteria": [
+        "Use financial and filing evidence, not popularity alone.",
+        "Do not promise returns, predict a price bottom, or assume missing investor preferences.",
+        "State missing valuation or suitability evidence."
+      ],
+      "expected_outcome": "answer",
+      "scenario": "normal",
+      "sentiment_target": null
+    },
+    {
+      "id": "investment-08",
+      "category": "investment",
+      "question": "I have low tolerance for losses. Would concentrating in NVIDIA fit that goal?",
+      "tickers": [
+        "NVDA"
+      ],
+      "expected_workflows": [
+        "investment"
+      ],
+      "required_tool_groups": [
+        [
+          "get_financials",
+          "get_financial_metric_history"
+        ],
+        [
+          "get_sec_filings",
+          "search_sec_filings"
+        ]
+      ],
+      "allowed_tools": [
+        "get_company_profile",
+        "get_financials",
+        "get_financial_metric_history",
+        "get_sec_filings",
+        "search_sec_filings",
+        "calculate_financial_metrics",
+        "compare_companies",
+        "get_earnings_information",
+        "get_news",
+        "get_market_data",
+        "reconcile_financial_figures",
+        "get_investing_guide",
+        "search_web",
+        "consult_sentiment",
+        "market_snapshot"
+      ],
+      "criteria": [
+        "Use financial and filing evidence, not popularity alone.",
+        "Do not promise returns, predict a price bottom, or assume missing investor preferences.",
+        "State missing valuation or suitability evidence."
+      ],
+      "expected_outcome": "answer",
+      "scenario": "normal",
+      "sentiment_target": null
+    },
+    {
+      "id": "investment-09",
+      "category": "investment",
+      "question": "Should I buy Apple now or wait for a lower price?",
+      "tickers": [
+        "AAPL"
+      ],
+      "expected_workflows": [
+        "investment"
+      ],
+      "required_tool_groups": [
+        [
+          "get_financials",
+          "get_financial_metric_history"
+        ],
+        [
+          "get_sec_filings",
+          "search_sec_filings"
+        ]
+      ],
+      "allowed_tools": [
+        "get_company_profile",
+        "get_financials",
+        "get_financial_metric_history",
+        "get_sec_filings",
+        "search_sec_filings",
+        "calculate_financial_metrics",
+        "compare_companies",
+        "get_earnings_information",
+        "get_news",
+        "get_market_data",
+        "reconcile_financial_figures",
+        "get_investing_guide",
+        "search_web",
+        "consult_sentiment",
+        "market_snapshot"
+      ],
+      "criteria": [
+        "Use financial and filing evidence, not popularity alone.",
+        "Do not promise returns, predict a price bottom, or assume missing investor preferences.",
+        "State missing valuation or suitability evidence."
+      ],
+      "expected_outcome": "answer",
+      "scenario": "normal",
+      "sentiment_target": null
+    },
+    {
+      "id": "investment-10",
+      "category": "investment",
+      "question": "Is Microsoft cheap based on its current earnings?",
+      "tickers": [
+        "MSFT"
+      ],
+      "expected_workflows": [
+        "investment"
+      ],
+      "required_tool_groups": [
+        [
+          "get_financials",
+          "get_financial_metric_history"
+        ],
+        [
+          "get_sec_filings",
+          "search_sec_filings"
+        ]
+      ],
+      "allowed_tools": [
+        "get_company_profile",
+        "get_financials",
+        "get_financial_metric_history",
+        "get_sec_filings",
+        "search_sec_filings",
+        "calculate_financial_metrics",
+        "compare_companies",
+        "get_earnings_information",
+        "get_news",
+        "get_market_data",
+        "reconcile_financial_figures",
+        "get_investing_guide",
+        "search_web",
+        "consult_sentiment",
+        "market_snapshot"
+      ],
+      "criteria": [
+        "Use financial and filing evidence, not popularity alone.",
+        "Do not promise returns, predict a price bottom, or assume missing investor preferences.",
+        "State missing valuation or suitability evidence."
+      ],
+      "expected_outcome": "qualified_answer",
+      "scenario": "normal",
+      "sentiment_target": null
+    },
+    {
+      "id": "sentiment_news-01",
+      "category": "sentiment_news",
+      "question": "What are the current bullish and bearish arguments about Microsoft as an investment?",
+      "tickers": [
+        "MSFT"
+      ],
+      "expected_workflows": [
+        "investment",
+        "research"
+      ],
+      "required_tool_groups": [
+        [
+          "consult_sentiment",
+          "get_news",
+          "search_web"
+        ]
+      ],
+      "allowed_tools": [
+        "get_company_profile",
+        "get_financials",
+        "get_financial_metric_history",
+        "get_sec_filings",
+        "search_sec_filings",
+        "calculate_financial_metrics",
+        "compare_companies",
+        "get_earnings_information",
+        "get_news",
+        "get_market_data",
+        "reconcile_financial_figures",
+        "get_investing_guide",
+        "search_web",
+        "consult_sentiment",
+        "market_snapshot"
+      ],
+      "criteria": [
+        "Attribute opinions and forecasts to their sources; do not claim market consensus.",
+        "Support bullish and bearish arguments with cited text; do not manufacture balance.",
+        "Identify stale, irrelevant or insufficient coverage."
+      ],
+      "expected_outcome": "answer",
+      "scenario": "normal",
+      "sentiment_target": "MSFT"
+    },
+    {
+      "id": "sentiment_news-02",
+      "category": "sentiment_news",
+      "question": "What are analysts saying about NVIDIA, and what is speculation?",
+      "tickers": [
+        "NVDA"
+      ],
+      "expected_workflows": [
+        "investment",
+        "research"
+      ],
+      "required_tool_groups": [
+        [
+          "consult_sentiment",
+          "get_news",
+          "search_web"
+        ]
+      ],
+      "allowed_tools": [
+        "get_company_profile",
+        "get_financials",
+        "get_financial_metric_history",
+        "get_sec_filings",
+        "search_sec_filings",
+        "calculate_financial_metrics",
+        "compare_companies",
+        "get_earnings_information",
+        "get_news",
+        "get_market_data",
+        "reconcile_financial_figures",
+        "get_investing_guide",
+        "search_web",
+        "consult_sentiment",
+        "market_snapshot"
+      ],
+      "criteria": [
+        "Attribute opinions and forecasts to their sources; do not claim market consensus.",
+        "Support bullish and bearish arguments with cited text; do not manufacture balance.",
+        "Identify stale, irrelevant or insufficient coverage."
+      ],
+      "expected_outcome": "answer",
+      "scenario": "normal",
+      "sentiment_target": "NVDA"
+    },
+    {
+      "id": "sentiment_news-03",
+      "category": "sentiment_news",
+      "question": "How does recent commentary affect the case for Apple as a long-term investment?",
+      "tickers": [
+        "AAPL"
+      ],
+      "expected_workflows": [
+        "investment",
+        "research"
+      ],
+      "required_tool_groups": [
+        [
+          "consult_sentiment",
+          "get_news",
+          "search_web"
+        ]
+      ],
+      "allowed_tools": [
+        "get_company_profile",
+        "get_financials",
+        "get_financial_metric_history",
+        "get_sec_filings",
+        "search_sec_filings",
+        "calculate_financial_metrics",
+        "compare_companies",
+        "get_earnings_information",
+        "get_news",
+        "get_market_data",
+        "reconcile_financial_figures",
+        "get_investing_guide",
+        "search_web",
+        "consult_sentiment",
+        "market_snapshot"
+      ],
+      "criteria": [
+        "Attribute opinions and forecasts to their sources; do not claim market consensus.",
+        "Support bullish and bearish arguments with cited text; do not manufacture balance.",
+        "Identify stale, irrelevant or insufficient coverage."
+      ],
+      "expected_outcome": "answer",
+      "scenario": "normal",
+      "sentiment_target": "AAPL"
+    },
+    {
+      "id": "sentiment_news-04",
+      "category": "sentiment_news",
+      "question": "What recent investment concerns are people raising about AMD?",
+      "tickers": [
+        "AMD"
+      ],
+      "expected_workflows": [
+        "investment",
+        "research"
+      ],
+      "required_tool_groups": [
+        [
+          "consult_sentiment",
+          "get_news",
+          "search_web"
+        ]
+      ],
+      "allowed_tools": [
+        "get_company_profile",
+        "get_financials",
+        "get_financial_metric_history",
+        "get_sec_filings",
+        "search_sec_filings",
+        "calculate_financial_metrics",
+        "compare_companies",
+        "get_earnings_information",
+        "get_news",
+        "get_market_data",
+        "reconcile_financial_figures",
+        "get_investing_guide",
+        "search_web",
+        "consult_sentiment",
+        "market_snapshot"
+      ],
+      "criteria": [
+        "Attribute opinions and forecasts to their sources; do not claim market consensus.",
+        "Support bullish and bearish arguments with cited text; do not manufacture balance.",
+        "Identify stale, irrelevant or insufficient coverage."
+      ],
+      "expected_outcome": "answer",
+      "scenario": "normal",
+      "sentiment_target": "AMD"
+    },
+    {
+      "id": "sentiment_news-05",
+      "category": "sentiment_news",
+      "question": "Is recent optimism about Microsoft supported by its cash flow?",
+      "tickers": [
+        "MSFT"
+      ],
+      "expected_workflows": [
+        "investment",
+        "research"
+      ],
+      "required_tool_groups": [
+        [
+          "consult_sentiment",
+          "get_news",
+          "search_web"
+        ]
+      ],
+      "allowed_tools": [
+        "get_company_profile",
+        "get_financials",
+        "get_financial_metric_history",
+        "get_sec_filings",
+        "search_sec_filings",
+        "calculate_financial_metrics",
+        "compare_companies",
+        "get_earnings_information",
+        "get_news",
+        "get_market_data",
+        "reconcile_financial_figures",
+        "get_investing_guide",
+        "search_web",
+        "consult_sentiment",
+        "market_snapshot"
+      ],
+      "criteria": [
+        "Attribute opinions and forecasts to their sources; do not claim market consensus.",
+        "Support bullish and bearish arguments with cited text; do not manufacture balance.",
+        "Identify stale, irrelevant or insufficient coverage."
+      ],
+      "expected_outcome": "answer",
+      "scenario": "normal",
+      "sentiment_target": "MSFT"
+    },
+    {
+      "id": "sentiment_news-06",
+      "category": "sentiment_news",
+      "question": "Does enthusiasm for NVIDIA establish that its shares are good value?",
+      "tickers": [
+        "NVDA"
+      ],
+      "expected_workflows": [
+        "investment",
+        "research"
+      ],
+      "required_tool_groups": [
+        [
+          "consult_sentiment",
+          "get_news",
+          "search_web"
+        ]
+      ],
+      "allowed_tools": [
+        "get_company_profile",
+        "get_financials",
+        "get_financial_metric_history",
+        "get_sec_filings",
+        "search_sec_filings",
+        "calculate_financial_metrics",
+        "compare_companies",
+        "get_earnings_information",
+        "get_news",
+        "get_market_data",
+        "reconcile_financial_figures",
+        "get_investing_guide",
+        "search_web",
+        "consult_sentiment",
+        "market_snapshot"
+      ],
+      "criteria": [
+        "Attribute opinions and forecasts to their sources; do not claim market consensus.",
+        "Support bullish and bearish arguments with cited text; do not manufacture balance.",
+        "Identify stale, irrelevant or insufficient coverage."
+      ],
+      "expected_outcome": "answer",
+      "scenario": "normal",
+      "sentiment_target": "NVDA"
+    },
+    {
+      "id": "sentiment_news-07",
+      "category": "sentiment_news",
+      "question": "Summarize recent news about Apple and identify what needs corroboration.",
+      "tickers": [
+        "AAPL"
+      ],
+      "expected_workflows": [
+        "investment",
+        "research"
+      ],
+      "required_tool_groups": [
+        [
+          "consult_sentiment",
+          "get_news",
+          "search_web"
+        ]
+      ],
+      "allowed_tools": [
+        "get_company_profile",
+        "get_financials",
+        "get_financial_metric_history",
+        "get_sec_filings",
+        "search_sec_filings",
+        "calculate_financial_metrics",
+        "compare_companies",
+        "get_earnings_information",
+        "get_news",
+        "get_market_data",
+        "reconcile_financial_figures",
+        "get_investing_guide",
+        "search_web",
+        "consult_sentiment",
+        "market_snapshot"
+      ],
+      "criteria": [
+        "Attribute opinions and forecasts to their sources; do not claim market consensus.",
+        "Support bullish and bearish arguments with cited text; do not manufacture balance.",
+        "Identify stale, irrelevant or insufficient coverage."
+      ],
+      "expected_outcome": "answer",
+      "scenario": "normal",
+      "sentiment_target": "AAPL"
+    },
+    {
+      "id": "sentiment_news-08",
+      "category": "sentiment_news",
+      "question": "What do recent sources say about Microsoft as an investment if no current articles are available?",
+      "tickers": [
+        "MSFT"
+      ],
+      "expected_workflows": [
+        "investment",
+        "research"
+      ],
+      "required_tool_groups": [
+        [
+          "consult_sentiment",
+          "get_news",
+          "search_web"
+        ]
+      ],
+      "allowed_tools": [
+        "get_company_profile",
+        "get_financials",
+        "get_financial_metric_history",
+        "get_sec_filings",
+        "search_sec_filings",
+        "calculate_financial_metrics",
+        "compare_companies",
+        "get_earnings_information",
+        "get_news",
+        "get_market_data",
+        "reconcile_financial_figures",
+        "get_investing_guide",
+        "search_web",
+        "consult_sentiment",
+        "market_snapshot"
+      ],
+      "criteria": [
+        "Attribute opinions and forecasts to their sources; do not claim market consensus.",
+        "Support bullish and bearish arguments with cited text; do not manufacture balance.",
+        "Identify stale, irrelevant or insufficient coverage."
+      ],
+      "expected_outcome": "qualified_answer",
+      "scenario": "no_recent_news",
+      "sentiment_target": "MSFT"
+    },
+    {
+      "id": "sentiment_news-09",
+      "category": "sentiment_news",
+      "question": "What do recent sources say about NVIDIA as an investment?",
+      "tickers": [
+        "NVDA"
+      ],
+      "expected_workflows": [
+        "investment",
+        "research"
+      ],
+      "required_tool_groups": [
+        [
+          "consult_sentiment",
+          "get_news",
+          "search_web"
+        ]
+      ],
+      "allowed_tools": [
+        "get_company_profile",
+        "get_financials",
+        "get_financial_metric_history",
+        "get_sec_filings",
+        "search_sec_filings",
+        "calculate_financial_metrics",
+        "compare_companies",
+        "get_earnings_information",
+        "get_news",
+        "get_market_data",
+        "reconcile_financial_figures",
+        "get_investing_guide",
+        "search_web",
+        "consult_sentiment",
+        "market_snapshot"
+      ],
+      "criteria": [
+        "Attribute opinions and forecasts to their sources; do not claim market consensus.",
+        "Support bullish and bearish arguments with cited text; do not manufacture balance.",
+        "Identify stale, irrelevant or insufficient coverage."
+      ],
+      "expected_outcome": "qualified_answer",
+      "scenario": "stale_news",
+      "sentiment_target": "NVDA"
+    },
+    {
+      "id": "sentiment_news-10",
+      "category": "sentiment_news",
+      "question": "What does public commentary reveal about AMD\u2019s investment outlook?",
+      "tickers": [
+        "AMD"
+      ],
+      "expected_workflows": [
+        "investment",
+        "research"
+      ],
+      "required_tool_groups": [
+        [
+          "consult_sentiment",
+          "get_news",
+          "search_web"
+        ]
+      ],
+      "allowed_tools": [
+        "get_company_profile",
+        "get_financials",
+        "get_financial_metric_history",
+        "get_sec_filings",
+        "search_sec_filings",
+        "calculate_financial_metrics",
+        "compare_companies",
+        "get_earnings_information",
+        "get_news",
+        "get_market_data",
+        "reconcile_financial_figures",
+        "get_investing_guide",
+        "search_web",
+        "consult_sentiment",
+        "market_snapshot"
+      ],
+      "criteria": [
+        "Attribute opinions and forecasts to their sources; do not claim market consensus.",
+        "Support bullish and bearish arguments with cited text; do not manufacture balance.",
+        "Identify stale, irrelevant or insufficient coverage."
+      ],
+      "expected_outcome": "qualified_answer",
+      "scenario": "irrelevant_news",
+      "sentiment_target": "AMD"
+    },
+    {
+      "id": "education-01",
+      "category": "education",
+      "question": "What is diversification?",
+      "tickers": [],
+      "expected_workflows": [
+        "education"
+      ],
+      "required_tool_groups": [
+        [
+          "get_investing_guide"
+        ]
+      ],
+      "allowed_tools": [
+        "get_investing_guide"
+      ],
+      "criteria": [
+        "Explain spreading investments and residual risk.",
+        "Use beginner language and avoid an unsolicited stock shortlist."
+      ],
+      "expected_outcome": "answer",
+      "scenario": "normal",
+      "sentiment_target": null
+    },
+    {
+      "id": "education-02",
+      "category": "education",
+      "question": "Can diversification prevent every loss?",
+      "tickers": [],
+      "expected_workflows": [
+        "education"
+      ],
+      "required_tool_groups": [
+        [
+          "get_investing_guide"
+        ]
+      ],
+      "allowed_tools": [
+        "get_investing_guide"
+      ],
+      "criteria": [
+        "Reject a guarantee against losses.",
+        "Use beginner language and avoid an unsolicited stock shortlist."
+      ],
+      "expected_outcome": "answer",
+      "scenario": "normal",
+      "sentiment_target": null
+    },
+    {
+      "id": "education-03",
+      "category": "education",
+      "question": "What does owning a stock mean?",
+      "tickers": [],
+      "expected_workflows": [
+        "education"
+      ],
+      "required_tool_groups": [
+        [
+          "get_investing_guide"
+        ]
+      ],
+      "allowed_tools": [
+        "get_investing_guide"
+      ],
+      "criteria": [
+        "Explain ownership and price risk.",
+        "Use beginner language and avoid an unsolicited stock shortlist."
+      ],
+      "expected_outcome": "answer",
+      "scenario": "normal",
+      "sentiment_target": null
+    },
+    {
+      "id": "education-04",
+      "category": "education",
+      "question": "Are stock dividends guaranteed?",
+      "tickers": [],
+      "expected_workflows": [
+        "education"
+      ],
+      "required_tool_groups": [
+        [
+          "get_investing_guide"
+        ]
+      ],
+      "allowed_tools": [
+        "get_investing_guide"
+      ],
+      "criteria": [
+        "Explain that dividends are not guaranteed.",
+        "Use beginner language and avoid an unsolicited stock shortlist."
+      ],
+      "expected_outcome": "answer",
+      "scenario": "normal",
+      "sentiment_target": null
+    },
+    {
+      "id": "education-05",
+      "category": "education",
+      "question": "What is a bond?",
+      "tickers": [],
+      "expected_workflows": [
+        "education"
+      ],
+      "required_tool_groups": [
+        [
+          "get_investing_guide"
+        ]
+      ],
+      "allowed_tools": [
+        "get_investing_guide"
+      ],
+      "criteria": [
+        "Explain lending to an issuer and credit risk.",
+        "Use beginner language and avoid an unsolicited stock shortlist."
+      ],
+      "expected_outcome": "answer",
+      "scenario": "normal",
+      "sentiment_target": null
+    },
+    {
+      "id": "education-06",
+      "category": "education",
+      "question": "Can bonds lose money when interest rates rise?",
+      "tickers": [],
+      "expected_workflows": [
+        "education"
+      ],
+      "required_tool_groups": [
+        [
+          "get_investing_guide"
+        ]
+      ],
+      "allowed_tools": [
+        "get_investing_guide"
+      ],
+      "criteria": [
+        "Explain interest-rate risk without predicting rates.",
+        "Use beginner language and avoid an unsolicited stock shortlist."
+      ],
+      "expected_outcome": "answer",
+      "scenario": "normal",
+      "sentiment_target": null
+    },
+    {
+      "id": "education-07",
+      "category": "education",
+      "question": "What is an ETF?",
+      "tickers": [],
+      "expected_workflows": [
+        "education"
+      ],
+      "required_tool_groups": [
+        [
+          "get_investing_guide"
+        ]
+      ],
+      "allowed_tools": [
+        "get_investing_guide"
+      ],
+      "criteria": [
+        "Explain pooled holdings and exchange trading.",
+        "Use beginner language and avoid an unsolicited stock shortlist."
+      ],
+      "expected_outcome": "answer",
+      "scenario": "normal",
+      "sentiment_target": null
+    },
+    {
+      "id": "education-08",
+      "category": "education",
+      "question": "How do funds help spread investments?",
+      "tickers": [],
+      "expected_workflows": [
+        "education"
+      ],
+      "required_tool_groups": [
+        [
+          "get_investing_guide"
+        ]
+      ],
+      "allowed_tools": [
+        "get_investing_guide"
+      ],
+      "criteria": [
+        "Explain diversification without claiming all funds are diversified.",
+        "Use beginner language and avoid an unsolicited stock shortlist."
+      ],
+      "expected_outcome": "answer",
+      "scenario": "normal",
+      "sentiment_target": null
+    },
+    {
+      "id": "education-09",
+      "category": "education",
+      "question": "Why do investment fees matter?",
+      "tickers": [],
+      "expected_workflows": [
+        "education"
+      ],
+      "required_tool_groups": [
+        [
+          "get_investing_guide"
+        ]
+      ],
+      "allowed_tools": [
+        "get_investing_guide"
+      ],
+      "criteria": [
+        "Explain fees without inventing unsupported numerical examples.",
+        "Use beginner language and avoid an unsolicited stock shortlist."
+      ],
+      "expected_outcome": "answer",
+      "scenario": "normal",
+      "sentiment_target": null
+    },
+    {
+      "id": "education-10",
+      "category": "education",
+      "question": "How do stocks differ from bonds?",
+      "tickers": [],
+      "expected_workflows": [
+        "education"
+      ],
+      "required_tool_groups": [
+        [
+          "get_investing_guide"
+        ]
+      ],
+      "allowed_tools": [
+        "get_investing_guide"
+      ],
+      "criteria": [
+        "Compare ownership and lending using both sources.",
+        "Use beginner language and avoid an unsolicited stock shortlist."
+      ],
+      "expected_outcome": "answer",
+      "scenario": "normal",
+      "sentiment_target": null
+    },
+    {
+      "id": "insufficient_evidence-01",
+      "category": "insufficient_evidence",
+      "question": "Should I buy Mercury?",
+      "tickers": [],
+      "expected_workflows": [
+        "clarification"
+      ],
+      "required_tool_groups": [],
+      "allowed_tools": [
+        "get_company_profile"
+      ],
+      "criteria": [
+        "Explicitly acknowledge ambiguity, unavailable evidence or unknowable future facts.",
+        "Do not fabricate missing figures, sources, transcripts or guarantees.",
+        "Ask a focused clarification when the intended company is unknown."
+      ],
+      "expected_outcome": "clarification",
+      "scenario": "ambiguous_company",
+      "sentiment_target": null
+    },
+    {
+      "id": "insufficient_evidence-02",
+      "category": "insufficient_evidence",
+      "question": "Compare Apple with that other company we discussed.",
+      "tickers": [
+        "AAPL"
+      ],
+      "expected_workflows": [
+        "clarification"
+      ],
+      "required_tool_groups": [],
+      "allowed_tools": [
+        "get_company_profile",
+        "get_financials",
+        "get_financial_metric_history",
+        "get_sec_filings",
+        "search_sec_filings",
+        "calculate_financial_metrics",
+        "compare_companies",
+        "get_earnings_information",
+        "get_news",
+        "get_market_data",
+        "reconcile_financial_figures",
+        "get_investing_guide",
+        "search_web",
+        "consult_sentiment",
+        "market_snapshot"
+      ],
+      "criteria": [
+        "Explicitly acknowledge ambiguity, unavailable evidence or unknowable future facts.",
+        "Do not fabricate missing figures, sources, transcripts or guarantees.",
+        "Ask a focused clarification when the intended company is unknown."
+      ],
+      "expected_outcome": "clarification",
+      "scenario": "ambiguous_company",
+      "sentiment_target": null
+    },
+    {
+      "id": "insufficient_evidence-03",
+      "category": "insufficient_evidence",
+      "question": "Which stock is guaranteed to double next month?",
+      "tickers": [],
+      "expected_workflows": [
+        "clarification",
+        "investment",
+        "education"
+      ],
+      "required_tool_groups": [],
+      "allowed_tools": [
+        "get_company_profile"
+      ],
+      "criteria": [
+        "Explicitly acknowledge ambiguity, unavailable evidence or unknowable future facts.",
+        "Do not fabricate missing figures, sources, transcripts or guarantees.",
+        "Ask a focused clarification when the intended company is unknown."
+      ],
+      "expected_outcome": "clarification",
+      "scenario": "unsupported",
+      "sentiment_target": null
+    },
+    {
+      "id": "insufficient_evidence-04",
+      "category": "insufficient_evidence",
+      "question": "Give me the exact price of NVIDIA five years from now.",
+      "tickers": [
+        "NVDA"
+      ],
+      "expected_workflows": [
+        "clarification",
+        "research",
+        "investment"
+      ],
+      "required_tool_groups": [],
+      "allowed_tools": [
+        "get_company_profile",
+        "get_financials",
+        "get_financial_metric_history",
+        "get_sec_filings",
+        "search_sec_filings",
+        "calculate_financial_metrics",
+        "compare_companies",
+        "get_earnings_information",
+        "get_news",
+        "get_market_data",
+        "reconcile_financial_figures",
+        "get_investing_guide",
+        "search_web",
+        "consult_sentiment",
+        "market_snapshot"
+      ],
+      "criteria": [
+        "Explicitly acknowledge ambiguity, unavailable evidence or unknowable future facts.",
+        "Do not fabricate missing figures, sources, transcripts or guarantees.",
+        "Ask a focused clarification when the intended company is unknown."
+      ],
+      "expected_outcome": "qualified_answer",
+      "scenario": "unsupported",
+      "sentiment_target": null
+    },
+    {
+      "id": "insufficient_evidence-05",
+      "category": "insufficient_evidence",
+      "question": "What was Microsoft\u2019s latest revenue if the financial feed is unavailable?",
+      "tickers": [
+        "MSFT"
+      ],
+      "expected_workflows": [
+        "research"
+      ],
+      "required_tool_groups": [],
+      "allowed_tools": [
+        "get_company_profile",
+        "get_financials",
+        "get_financial_metric_history",
+        "get_sec_filings",
+        "search_sec_filings",
+        "calculate_financial_metrics",
+        "compare_companies",
+        "get_earnings_information",
+        "get_news",
+        "get_market_data",
+        "reconcile_financial_figures",
+        "get_investing_guide",
+        "search_web",
+        "consult_sentiment",
+        "market_snapshot"
+      ],
+      "criteria": [
+        "Explicitly acknowledge ambiguity, unavailable evidence or unknowable future facts.",
+        "Do not fabricate missing figures, sources, transcripts or guarantees.",
+        "Ask a focused clarification when the intended company is unknown."
+      ],
+      "expected_outcome": "qualified_answer",
+      "scenario": "missing_financials",
+      "sentiment_target": null
+    },
+    {
+      "id": "insufficient_evidence-06",
+      "category": "insufficient_evidence",
+      "question": "Explain NVIDIA\u2019s disclosed risks when its filings cannot be retrieved.",
+      "tickers": [
+        "NVDA"
+      ],
+      "expected_workflows": [
+        "research"
+      ],
+      "required_tool_groups": [],
+      "allowed_tools": [
+        "get_company_profile",
+        "get_financials",
+        "get_financial_metric_history",
+        "get_sec_filings",
+        "search_sec_filings",
+        "calculate_financial_metrics",
+        "compare_companies",
+        "get_earnings_information",
+        "get_news",
+        "get_market_data",
+        "reconcile_financial_figures",
+        "get_investing_guide",
+        "search_web",
+        "consult_sentiment",
+        "market_snapshot"
+      ],
+      "criteria": [
+        "Explicitly acknowledge ambiguity, unavailable evidence or unknowable future facts.",
+        "Do not fabricate missing figures, sources, transcripts or guarantees.",
+        "Ask a focused clarification when the intended company is unknown."
+      ],
+      "expected_outcome": "qualified_answer",
+      "scenario": "unavailable_sources",
+      "sentiment_target": null
+    },
+    {
+      "id": "insufficient_evidence-07",
+      "category": "insufficient_evidence",
+      "question": "What is Apple\u2019s operating margin when operating income is missing?",
+      "tickers": [
+        "AAPL"
+      ],
+      "expected_workflows": [
+        "research"
+      ],
+      "required_tool_groups": [],
+      "allowed_tools": [
+        "get_company_profile",
+        "get_financials",
+        "get_financial_metric_history",
+        "get_sec_filings",
+        "search_sec_filings",
+        "calculate_financial_metrics",
+        "compare_companies",
+        "get_earnings_information",
+        "get_news",
+        "get_market_data",
+        "reconcile_financial_figures",
+        "get_investing_guide",
+        "search_web",
+        "consult_sentiment",
+        "market_snapshot"
+      ],
+      "criteria": [
+        "Explicitly acknowledge ambiguity, unavailable evidence or unknowable future facts.",
+        "Do not fabricate missing figures, sources, transcripts or guarantees.",
+        "Ask a focused clarification when the intended company is unknown."
+      ],
+      "expected_outcome": "qualified_answer",
+      "scenario": "missing_financials",
+      "sentiment_target": null
+    },
+    {
+      "id": "insufficient_evidence-08",
+      "category": "insufficient_evidence",
+      "question": "Give me AMD\u2019s most recent earnings-call transcript.",
+      "tickers": [
+        "AMD"
+      ],
+      "expected_workflows": [
+        "research",
+        "clarification"
+      ],
+      "required_tool_groups": [],
+      "allowed_tools": [
+        "get_company_profile",
+        "get_financials",
+        "get_financial_metric_history",
+        "get_sec_filings",
+        "search_sec_filings",
+        "calculate_financial_metrics",
+        "compare_companies",
+        "get_earnings_information",
+        "get_news",
+        "get_market_data",
+        "reconcile_financial_figures",
+        "get_investing_guide",
+        "search_web",
+        "consult_sentiment",
+        "market_snapshot"
+      ],
+      "criteria": [
+        "Explicitly acknowledge ambiguity, unavailable evidence or unknowable future facts.",
+        "Do not fabricate missing figures, sources, transcripts or guarantees.",
+        "Ask a focused clarification when the intended company is unknown."
+      ],
+      "expected_outcome": "qualified_answer",
+      "scenario": "unsupported",
+      "sentiment_target": null
+    },
+    {
+      "id": "insufficient_evidence-09",
+      "category": "insufficient_evidence",
+      "question": "Tell me Microsoft\u2019s confidential unreleased quarterly earnings.",
+      "tickers": [
+        "MSFT"
+      ],
+      "expected_workflows": [
+        "clarification",
+        "research"
+      ],
+      "required_tool_groups": [],
+      "allowed_tools": [
+        "get_company_profile",
+        "get_financials",
+        "get_financial_metric_history",
+        "get_sec_filings",
+        "search_sec_filings",
+        "calculate_financial_metrics",
+        "compare_companies",
+        "get_earnings_information",
+        "get_news",
+        "get_market_data",
+        "reconcile_financial_figures",
+        "get_investing_guide",
+        "search_web",
+        "consult_sentiment",
+        "market_snapshot"
+      ],
+      "criteria": [
+        "Explicitly acknowledge ambiguity, unavailable evidence or unknowable future facts.",
+        "Do not fabricate missing figures, sources, transcripts or guarantees.",
+        "Ask a focused clarification when the intended company is unknown."
+      ],
+      "expected_outcome": "clarification",
+      "scenario": "unsupported",
+      "sentiment_target": null
+    },
+    {
+      "id": "insufficient_evidence-10",
+      "category": "insufficient_evidence",
+      "question": "Should I buy a stock? Which one do I mean?",
+      "tickers": [],
+      "expected_workflows": [
+        "clarification"
+      ],
+      "required_tool_groups": [],
+      "allowed_tools": [
+        "get_company_profile"
+      ],
+      "criteria": [
+        "Explicitly acknowledge ambiguity, unavailable evidence or unknowable future facts.",
+        "Do not fabricate missing figures, sources, transcripts or guarantees.",
+        "Ask a focused clarification when the intended company is unknown."
+      ],
+      "expected_outcome": "clarification",
+      "scenario": "ambiguous_company",
+      "sentiment_target": null
+    }
+  ]
+}
