@@ -43,38 +43,101 @@ trades or establish personal suitability.
 
 ## Architecture
 
+**One interface routes each question to an appropriate workflow.** The company
+research and investment workflows share tool infrastructure but retain separate
+LangGraph graphs. Investing education is a shorter branch inside the investment
+graph. The sentiment agent is a specialist the investment lead can consult when
+useful; it does not run for every question.
+
+### 1. From the question to the right workflow
+
 ```mermaid
 flowchart TD
-    UI[Next.js question interface] --> API[FastAPI · streamed progress and results]
-    API --> ROUTE[Understand intent]
-    ROUTE --> R[Company research graph]
-    ROUTE --> I[Investment and education graph]
-    R --> P[Plan and choose tools]
-    P --> T[Retrieve evidence or calculate in Python]
-    T --> A[Assess evidence and remaining gaps]
-    A -->|More evidence needed| P
-    A --> V[Verify claims and synthesize]
-    I --> Q[Interpret question]
-    Q -->|Educational| E[Retrieve guides and verify explanation]
-    Q -->|Company research| B[Plan and collect baseline evidence]
-    B --> L[Lead investigates with tools]
-    L -->|Optional consultation| S[Sentiment researcher]
-    S --> L
-    L -->|Choose tool and inspect result| L
-    L --> V
-    V --> O[Source-linked report]
-    E --> O
+    User["User asks an open-ended question"] --> UI["Next.js interface"]
+    UI --> API["FastAPI: POST /assistant"]
+    API --> Router{"LLM interprets the question"}
+    Router -->|Company facts, financial trends, risks| Research["Company research workflow"]
+    Router -->|Investment ideas, suitability, comparisons| Investment["Investment assessment workflow"]
+    Router -->|General investing concepts| Education["Education branch"]
+    Router -->|Ambiguous or unsupported request| Clarify["Return a clarification"]
+    Research --> Report["Source-linked answer and limitations"]
+    Investment --> Report
+    Education --> Report
+    Report --> Display["Next.js renders the report"]
 ```
 
-The LLM selects tools and interprets evidence. Python executes tools, validates
-structured responses, checks citations, and performs financial calculations.
-Tool results are treated as untrusted inputs. Calculations use observed evidence
-IDs rather than numbers invented by the model, preserving their input lineage.
+FastAPI streams progress events while the selected workflow runs, then sends the
+final report. The original question reaches the workflow intact. Users do not
+select a workflow or manually enable the sentiment agent.
 
-Each run holds temporary state: the question, companies, plan, observations,
-sources, tool calls, findings, checks, iteration counts, and final report. There
-is no database or saved research history. The application deliberately excludes
-RAG, vector databases, Redis, Celery, microservices, and authentication.
+### 2. How the investment lead investigates
+
+The graph first resolves companies, plans the research, and collects baseline
+financial, filing and market evidence. The **additional investigation loop** is
+agent-directed: the lead examines what it knows and chooses its next action.
+
+```mermaid
+flowchart TD
+    Start["Resolve companies and create a plan"] --> Baseline["Collect baseline financial, filing and market evidence"]
+    Baseline --> Lead{"Lead evaluates evidence and gaps"}
+    Lead -->|Need more company information| API["Call an API or filing tool"]
+    Lead -->|Need a calculation| Python["Run a deterministic Python analysis tool"]
+    Lead -->|Need recent investment commentary| Sentiment["Consult sentiment agent"]
+    API --> Evidence["Add observations and source IDs to run state"]
+    Python --> Evidence
+    Evidence --> Lead
+    Sentiment --> Brief["Return reviewed arguments, citations and follow-up questions"]
+    Brief --> Lead
+    Lead -->|Enough evidence or investigation limit reached| Draft["Draft conditional investment assessment"]
+    Draft --> Check{"Python validates claims and citations"}
+    Check -->|Correction needed and retry available| Draft
+    Check -->|Continue to source review| Review["LLM reviews claims against cited evidence"]
+    Review --> Final["Apply evidence gates and render report with limitations"]
+```
+
+A tool retrieves data or performs an operation. The sentiment agent has its own
+bounded search, reading and review loop, then returns a compact brief to the lead.
+The lead can use that brief to choose another financial tool. Sentiment is opinion
+context; investment claims still need financial or filing evidence.
+
+The loop is bounded by time, model requests and investigation decisions. Reaching
+a limit does **not** mean the evidence is sufficient: unresolved gaps remain in
+the report, and unsupported claims are withheld.
+
+### 3. How the other paths differ
+
+| Path | Main steps | Verification and result |
+| --- | --- | --- |
+| **Company research** | Plan → choose tool → execute → assess evidence → repeat as needed | Verify claims; return to investigation or assessment when needed and budget permits; synthesize and validate an explanatory report. |
+| **Investing education** | Identify topic → retrieve investing guides → draft a plain-language explanation | Check citation IDs and numbers, then review against sources. Unsupported explanations are withheld. No company shortlist or sentiment consultation. |
+
+For example, “Why have Microsoft's operating margins changed?” takes the company
+research path. “Compare Microsoft and NVIDIA as long-term investments” takes the
+investment path, where the lead may consult sentiment if current commentary helps
+answer the question. “What is diversification?” takes the education branch.
+
+### Responsibilities and code map
+
+| Component | Responsibility | Implementation |
+| --- | --- | --- |
+| **Next.js interface** | Submit a question, display progress, render the appropriate report | [Frontend](frontend/app/page.tsx) |
+| **FastAPI and router** | Validate requests, stream events, choose a workflow, share the model-call budget | [API](backend/app/api.py) · [Router](backend/app/assistant.py) |
+| **Company research graph** | Plan, investigate, assess, verify and synthesize | [Research graph](backend/app/agent/graph.py) |
+| **Investment and education graph** | Collect evidence, select further tools, consult sentiment when useful, review the answer | [Investment graph](backend/app/ideas/graph.py) |
+| **Sentiment agent** | Find and read recent public articles; return attributed, reviewed arguments | [Sentiment agent](backend/app/ideas/sentiment.py) |
+| **Tools and Python checks** | Retrieve evidence, calculate metrics and preserve source lineage | [Tool registry](backend/app/tools/registry.py) · [Investment tools](backend/app/ideas/tools.py) |
+| **LLM adapters** | Structured planning, tool selection, interpretation and source review | [Ollama](backend/app/providers/llm.py) · [OpenRouter](backend/app/providers/openrouter.py) |
+
+Python executes financial calculations using observed evidence IDs rather than
+numbers invented by the LLM. It also validates structured responses and citation
+references. Model-based source review is an additional check, not a guarantee of
+accuracy. Retrieved content is treated as untrusted input.
+
+Each run keeps the question, companies, plan, observations, sources, tool calls,
+findings, checks and iteration counts **in memory for that run only**. There is no
+database or saved research history. Docker Compose runs the frontend and backend;
+Ollama runs on the host, or the backend calls OpenRouter. No RAG, vector database,
+Redis, Celery, authentication or general-purpose delegation framework is required.
 
 ### Optional sentiment consultation
 
