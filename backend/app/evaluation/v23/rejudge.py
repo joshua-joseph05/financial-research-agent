@@ -37,7 +37,7 @@ def main():
     manifest = json.loads((args.source / 'manifest.json').read_text())
     if manifest['state'] != 'complete':
         p.error('Source evaluation is not complete; keep its existing process running.')
-    files = sorted(args.source.glob('*-v2.json'))
+    files = sorted(args.source.glob('*-comparison-v2.json'))
     if len(files) != manifest['planned_pairs']:
         p.error('Source pair count does not match its completed manifest.')
     pairs = [json.loads(f.read_text()) for f in files]

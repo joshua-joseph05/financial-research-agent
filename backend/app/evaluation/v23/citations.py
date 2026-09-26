@@ -15,7 +15,11 @@ class BundleVerdict(Strict):
 class Bundles(Strict):
     claims:list[BundleVerdict]
 
-RULES='''Assess each claim against ONLY its supplied cited_evidence. Consider the evidence collectively: two financial records can jointly support a comparison even if neither alone proves the entire statement. supports_all is true only if the cited bundle establishes ALL material assertions, qualifiers, causal links and dates in the claim. Do not use uncited evidence or outside knowledge. A true number does not establish an added unsupported cause or a claim that a historical value is a projection. Generated interpretations and invalid calculations are not independent proof; use their valid source lineage. A missing/irrelevant citation bundle cannot establish support. Explain briefly before deciding. This assesses citations, not truth against other sources.'''
+RULES='''Judge whether ONLY the cited evidence, read collectively, supports the WHOLE claim. First inspect qualifiers: historical versus forecast, causal versus correlational, attribution, and dates. Explain any qualifier mismatch BEFORE discussing matching numbers. A matching number is insufficient.
+Example: claim "Acme projects revenue of 150 in 2025"; evidence "Acme revenue was 150 in 2025". Verdict FALSE: the evidence is historical and never establishes a projection. Do not drop the word projects from the claim. The same rule applies to estimated, expects, forecast and projected.
+Example: claim "Revenue rose from 100 to 150"; evidence records "Prior revenue 100" and "Current revenue 150". Verdict TRUE: the records jointly establish the comparison.
+Example: claim "Revenue rose because of an acquisition"; evidence only revenue figures. Verdict FALSE: the cause is missing.
+Return supports_all=true only when ALL material assertions and qualifiers are supported. Missing or irrelevant evidence is false. Do not use uncited evidence or outside knowledge. Generated interpretations and invalid calculations are not independent proof; follow valid source lineage. This assesses citations, not truth against other sources.'''
 
 def validate(data,context):
     exact(data['claims'],'claim_id',[c['id'] for c in context['claims']])
