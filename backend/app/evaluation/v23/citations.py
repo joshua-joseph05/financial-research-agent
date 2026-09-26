@@ -19,6 +19,10 @@ RULES='''Assess each claim against ONLY its supplied cited_evidence. Consider th
 
 def validate(data,context):
     exact(data['claims'],'claim_id',[c['id'] for c in context['claims']])
+    inputs={c['id']:c for c in context['claims']}
+    for verdict in data['claims']:
+        if verdict['supports_all'] and any(e.get('independent_calculation_check',{}).get('status')=='fail' for e in inputs[verdict['claim_id']]['cited_evidence']):
+            raise ValueError('Invalid cited calculation lineage cannot establish citation correctness')
     return data
 
 class BundleJudge(OllamaJudge):

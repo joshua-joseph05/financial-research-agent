@@ -69,7 +69,7 @@ def test_bundle_retries_preserve_raw_failed_output():
     outputs=iter(['{truncated',json.dumps({'claims':[{'claim_id':'c','reason':'Both cited records jointly support the change.','supports_all':True}]})])
     def fake(context,schema):
         return {'status_code':200,'raw_response':json.dumps({'done':True,'message':{'content':next(outputs)}})}
-    result=judge_call(fake,{'claims':[{'id':'c'}]},Bundles,validate)
+    result=judge_call(fake,{'claims':[{'id':'c','cited_evidence':[]}]},Bundles,validate)
     assert result['status']=='ok' and result['retry_count']==1
     assert result['attempts'][0]['raw_output']=='{truncated'
     assert result['attempts'][0]['failure_reason']
@@ -91,3 +91,13 @@ def test_calibration_gate_can_detect_semantically_wrong_well_formed_judge(tmp_pa
     assert run(overconfident,output) is False
     saved=json.loads(output.read_text())
     assert saved['passed']==1 and saved['total']==4
+
+
+def test_correct_number_with_invalid_cited_lineage_cannot_pass_bundle_validation():
+    import pytest
+    from app.evaluation.v23.citations import validate
+    context={'claims':[{'id':'c','cited_evidence':[{'id':'calc', 'value':'50',
+        'independent_calculation_check':{'status':'fail','reason':'Reversed input periods'}}]}]}
+    with pytest.raises(ValueError,match='Invalid cited calculation lineage'):
+        validate({'claims':[{'claim_id':'c','supports_all':True}]},context)
+    validate({'claims':[{'claim_id':'c','supports_all':False}]},context)
