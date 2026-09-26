@@ -1,5 +1,5 @@
 """Local evaluation-only transport retaining raw responses, even on parse failure."""
-import json,time
+import json,time,re
 from copy import deepcopy
 import httpx
 from .rubric import SYSTEM
@@ -79,7 +79,12 @@ def assess_claims(transport,context,max_attempts=2):
     """Blind factual support to citations; assess citation associations independently."""
     from .rubric import Claims,CitationJudgments,CITATION_RULES,validate_claims,validate_citations
     from app.evaluation.judge import closure
-    truth_context={**context,'claims':[{**c,'evidence_ids':[]} for c in context['claims']]}
+    known={e['id'] for e in context['available_evidence']}
+    def blind(claim):
+        ids=known|set(claim['evidence_ids'])
+        text=re.sub(r'\[([^\[\]]+)\]',lambda m:'' if m.group(1) in ids else m.group(0),claim['text'])
+        return {**claim,'text':text,'evidence_ids':[]}
+    truth_context={**context,'claims':[blind(c) for c in context['claims']]}
     truth=judge_call(transport,truth_context,Claims,validate_claims,max_attempts)
     records={e['id']:e for e in context['available_evidence']}
     associations=[]
@@ -102,3 +107,20 @@ def assess_claims(transport,context,max_attempts=2):
                         claim['citations'].append({'evidence_id':association['evidence_id'],'supports':c['supports'],'reason':c['reason']})
         truth={**truth,'judgment':merged}
     return truth,citations
+
+
+def judge_task(transport,context,max_attempts=2,cached=None,on_progress=None):
+    """Grade each criterion independently to prevent cross-criterion substitution."""
+    from .rubric import Task,validate_task
+    jobs=list((cached or {}).get('criterion_jobs',[]))
+    def aggregate(finished):
+        judgments=[c for job in jobs if job['status']=='ok' for c in job['judgment']['criteria']]
+        return {'status':('ok' if all(j['status']=='ok' for j in jobs) else 'judge_error') if finished else 'running',
+                'judgment':{'criteria':judgments},'criterion_jobs':jobs,
+                'retry_count':sum(j['retry_count'] for j in jobs),
+                'attempts':[a for j in jobs for a in j['attempts']]}
+    for criterion in context['criteria'][len(jobs):]:
+        job=judge_call(transport,{**context,'criteria':[criterion]},Task,validate_task,max_attempts)
+        job['criterion_id']=criterion['id'];jobs.append(job)
+        if on_progress:on_progress(aggregate(False))
+    return aggregate(True)

@@ -33,7 +33,7 @@ def reliability(pairs):
     output={}
     for system in ('agent','baseline'):
         results=[p['corrected'][system] for p in pairs]
-        jobs=[job for r in results for job in [r['task']]+r['claim_jobs']+r.get('citation_jobs',[])]
+        jobs=[job for r in results for job in r['task'].get('criterion_jobs',[r['task']])+r['claim_jobs']+r.get('citation_jobs',[])]
         counts={'judge_jobs':len(jobs),'successful_jobs':sum(j['status']=='ok' for j in jobs),
             'failed_jobs':sum(j['status']=='judge_error' for j in jobs),'retried_jobs':sum(j['retry_count']>0 for j in jobs),
             'attempts':sum(len(j['attempts']) for j in jobs),'failed_attempts':sum(a['status']=='error' for j in jobs for a in j['attempts']),

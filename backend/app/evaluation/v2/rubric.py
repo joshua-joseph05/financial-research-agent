@@ -1,6 +1,6 @@
 """Strict contracts and validation independent of the model transport."""
 import json
-from typing import Literal
+from typing import Literal,Annotated
 from pydantic import BaseModel, ConfigDict, Field
 
 class Strict(BaseModel):
@@ -28,9 +28,9 @@ class Claims(Strict):
 
 class Criterion(Strict):
     criterion_id:str
+    reason:str=Field(min_length=5,max_length=360,description='Concise comparison of the criterion with content actually present or absent in the answer.')
+    answer_quotes:list[Annotated[str,Field(min_length=1,max_length=400)]]=Field(max_length=3)
     verdict:Literal['pass','fail','unjudgeable']
-    answer_quotes:list[str]
-    reason:str=Field(min_length=5,max_length=360)
 
 class Task(Strict):
     criteria:list[Criterion]
@@ -45,7 +45,7 @@ UNJUDGEABLE: ambiguity or lack of relevant available evidence prevents a factual
 Classify the WHOLE segment, including causal links, attribution, dates and qualifiers, not just its central number. If one material detail is unsupported, the entire segment is unsupported even when other details are supported. For example, evidence 'sales rose 10%' does not support 'sales rose 10% because of advertising': the invented cause makes that segment UNSUPPORTED. Vague statements like 'the outlook got better' with no defined measure or time frame are UNJUDGEABLE rather than proven false or unsupported specific facts. A statement about a different company absent from the records is UNJUDGEABLE. A statement affirming a specific extra cause/detail about the covered event is UNSUPPORTED.
 All supported/unsupported/contradicted factual segments require citations. Judge the listed existing citation IDs separately: does their text/lineage support this particular assertion? Invalid IDs are handled deterministically outside your response. Return one citations entry for each existing cited ID; no others. A supported statement may have zero or incorrect citations. That remains supported, with citation completeness reduced separately. NONFACTUAL needs no citation. Never use an invalid calculation as proof. Records tagged generated_interpretation are valid citation handles, not independent evidence: assess their citations against underlying source input_ids and use the raw source as a witness. For witnesses, quote an exact substring of the evidence text or serialized record. Do not infer facts from an introductory promise such as "includes the following" without an actual list.'''
 TASK_RULES='''Grade ONLY what the supplied final answer actually tells the user. You receive no source bodies: do not infer unstated content from citation IDs, a criterion, the question, or an introductory promise. For example "risks include the following" without naming risks FAILS identifying risks. Correctly saying required inputs are missing can satisfy a qualified-answer task. Do not invent requirements beyond the supplied criteria. Financial evidence rather than popularity means discussing sourced financial facts; it does not by itself require a valuation verdict. A safe missing-data refusal must not fail because it avoids inventing a number.
-Treat retrieval/investigation wording as a requirement to communicate the result, not to perform a particular workflow. Judge positive requirements using exact quotations from the answer showing the actual content, not a promise to provide content. Every PASS of a positive criterion needs such a quote. Negative constraints can pass from absence of a prohibited assertion; explain that absence. Conditional applicability has been resolved identically for both systems before this call. Use unjudgeable only when the answer text cannot be assessed. Evidence correctness and arithmetic lineage are assessed separately; do not assume IDs establish truth.'''
+Treat retrieval/investigation wording as a requirement to communicate the result, not to perform a particular workflow. Judge positive requirements using exact quotations from the answer showing the actual content, not a promise to provide content. Every PASS of a positive criterion needs such a quote. Negative constraints can pass from absence of a prohibited assertion; explain that absence. Conditional applicability has been resolved identically for both systems before this call. Use unjudgeable only when the answer text cannot be assessed. A positive criterion must be directly addressed, not replaced with other useful content. In particular, a requirement to identify stale, irrelevant or insufficient coverage needs an explicit statement about recency, relevance, coverage or evidence gaps. Simply supplying financial figures or citations does NOT satisfy that requirement. If none of the answer quotes addresses the requested concept, FAIL the criterion rather than claiming other facts provide sufficient coverage. Evidence correctness and arithmetic lineage are assessed separately; do not assume IDs establish truth.'''
 
 def exact(items,key,expected):
     ids=[i[key] for i in items]

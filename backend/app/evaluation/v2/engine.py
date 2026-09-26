@@ -2,7 +2,7 @@
 from copy import deepcopy
 from . import VERSION
 from .rubric import Claims,Task,CLAIM_RULES,validate_claims,validate_task,task_context
-from .transport import judge_call,assess_claims
+from .transport import judge_call,assess_claims,judge_task
 from app.evaluation.checks import answer_claims,evidence_inventory,rate
 from app.evaluation.baseline import answer_calculations,evidence_bundle
 
@@ -52,7 +52,7 @@ def metrics(result,claims,records):
     task=result['task']
     criteria=(task.get('judgment') or {}).get('criteria',[])
     task_assessed=task['status']=='ok' and all(c['verdict']!='unjudgeable' for c in criteria)
-    jobs=[result['task']]+result['claim_jobs']+result.get('citation_jobs',[])
+    jobs=result['task'].get('criterion_jobs',[result['task']])+result['claim_jobs']+result.get('citation_jobs',[])
     return {
         'task_completion':rate(int(all(c['verdict']=='pass' for c in criteria)),1) if task_assessed else rate(0,0),
         'citation_validity':rate(sum(r in records for r in refs),len(refs)),
@@ -78,8 +78,11 @@ def evaluate(pair,system,case,transport,save=None,cached=None,max_attempts=2):
     packet=prepare(pair,system,case)
     result=cached or {'version':VERSION,'system_status':pair[system]['status'],'claims':[],'claim_jobs':[],'citation_jobs':[],
         'waived_criteria':packet['waived'],'calculations':packet['calculations'],'max_attempts':max_attempts}
-    if 'task' not in result:
-        result['task']=judge_call(transport,packet['task'],Task,validate_task,max_attempts)
+    if 'task' not in result or result['task']['status']=='running':
+        def task_progress(value):
+            result['task']=value
+            if save:save(result)
+        result['task']=judge_task(transport,packet['task'],max_attempts,result.get('task'),task_progress)
         if save:save(result)
     done={c['claim_id'] for c in result['claims']}
     todo=[c for c in packet['claims'] if c['id'] not in done]

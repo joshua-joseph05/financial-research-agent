@@ -255,3 +255,37 @@ def test_task_schema_requires_every_criterion_and_citation_schema_every_associat
     citations=constrained_schema(CitationJudgments,{'citations':[{'citation_id':'a'},{'citation_id':'b'}]})['properties']['citations']
     assert citations['minItems']==citations['maxItems']==2
     assert [i['properties']['citation_id']['const'] for i in citations['prefixItems']]==['a','b']
+
+def test_support_blinding_removes_inline_citation_handles_but_preserves_content():
+    from app.evaluation.v2.transport import assess_claims
+    seen=[]
+    def transport(context,schema):
+        if schema.__name__=='Claims':
+            seen.append(context['claims'][0]['text'])
+            return envelope(json.dumps({'claims':[annotated('supported',[],W)]}))
+        return envelope(json.dumps({'citations':[{'citation_id':c['citation_id'],'reason':'Revenue evidence supports revenue.','supports':True} for c in context['citations']]}))
+    context={'claims':[{'id':'c1','text':'Revenue was 100 USD [revenue]; range [90–110].','evidence_ids':['revenue']}],'available_evidence':EVIDENCE}
+    assess_claims(transport,context)
+    assert seen==['Revenue was 100 USD ; range [90–110].']
+    assert '[revenue]' in context['claims'][0]['text']
+
+def test_task_output_quotes_are_bounded():
+    from pydantic import ValidationError
+    data={'criteria':[{'criterion_id':'c1','reason':'A short reason.','answer_quotes':['x'*401],'verdict':'pass'}]}
+    with pytest.raises(ValidationError):Task.model_validate(data)
+
+def test_task_criteria_are_isolated_and_resume_does_not_repeat_them():
+    from app.evaluation.v2.transport import judge_task
+    contexts=[];progress=[]
+    def transport(context,schema):
+        contexts.append(context)
+        assert len(context['criteria'])==1
+        criterion=context['criteria'][0]
+        return envelope(json.dumps({'criteria':[{'criterion_id':criterion['id'],'reason':'The required topic is absent.','answer_quotes':[],'verdict':'fail'}]}))
+    context={'criteria':[{'id':'a','negative_only':False},{'id':'b','negative_only':False}],'answer':[{'text':'Only other facts.'}]}
+    result=judge_task(transport,context,on_progress=lambda r:progress.append(json.loads(json.dumps(r))))
+    assert len(contexts)==2 and len(result['criterion_jobs'])==2
+    assert result['status']=='ok'
+    assert [c['criterion_id'] for c in result['judgment']['criteria']]==['a','b']
+    resumed=judge_task(transport,context,cached=progress[0])
+    assert len(contexts)==3 and resumed['judgment']==result['judgment']

@@ -1,7 +1,7 @@
 """Live semantic calibration on hand-written answers; never runs financial research."""
 import argparse,json
 from pathlib import Path
-from .transport import OllamaJudge,judge_call,assess_claims
+from .transport import OllamaJudge,judge_call,assess_claims,judge_task
 from .rubric import Claims,Task,CLAIM_RULES,validate_claims,validate_task,task_context
 from .engine import claim_result
 from .rejudge import write
@@ -33,7 +33,7 @@ def run(transport,output):
               'tickers':['ACME'] if name=='omitted_risks' else ['AAPL'],'expected_outcome':'answer' if name=='omitted_risks' else 'qualified_answer',
               'criteria':['Name the supply risks.'] if name=='omitted_risks' else ['Explain why missing income prevents calculation.','Ask a focused clarification when the intended company is unknown.']}
         context,waived=task_context(case,[{'id':'c1','text':text,'evidence_ids':[]}])
-        job=judge_call(transport,context,Task,validate_task)
+        job=judge_task(transport,context)
         actual=job['judgment']['criteria'][0]['verdict'] if job['status']=='ok' else 'judge_error'
         results.append({'name':name,'expected':expected,'actual':actual,'passed':actual==expected,'waived':waived,'job':job})
         write(output,{'results':results});print(name,actual,flush=True)

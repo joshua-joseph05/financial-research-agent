@@ -23,8 +23,8 @@ Run only saved-answer grading:
 ```bash
 python -m app.evaluation.v2.rejudge \
   --source work/evaluation-18-20260925-153815-iu1ZE0/comparison \
-  --output work/evaluation-corrected-v2 \
-  --max-requests 640
+  --output work/evaluation-corrected-v22 \
+  --max-requests 724
 ```
 
 Use `--dry-run` to calculate the request ceiling without model calls. Resume the exact same inputs and evaluator using `--resume`. Changed source hashes, model or evaluator code require a new directory. Every run copies historical artifacts and snapshots both rubric versions. No research or answer-generation entry point is called.
@@ -32,3 +32,7 @@ Use `--dry-run` to calculate the request ceiling without model calls. Resume the
 `comparison-v2.json` and `comparison-v2.md` include paired and category metrics, numerator/denominator coverage, mean/median latency, retry and error statistics, and the original aggregate metrics. Each pair JSON retains the unchanged original pair and all new judgments. Local raw output may contain the benchmark answers and sources; no API keys or provider headers are stored.
 
 Live calibration artifacts are deliberately preserved even when failed. Early revisions showed invented citations, an unsupported causal clause being ignored, a vague assertion being misclassified, and a local JSON-schema compatibility error. The final calibration separates support and citations, validates exact quotation/ID contracts, and puts concise evidence comparison before the final label. A passed small calibration is not proof of general semantic reliability; inspect representative saved-answer judgments before using the scores to optimize the agent.
+
+### v2.2 task grading
+
+Each applicable task criterion is graded in its own request with the same final answer, preventing a fulfilled criterion from substituting for a different missing requirement. Explanations precede verdicts; exact answer quotations are bounded to three quotations of 400 characters each. Each criterion has the same maximum of two attempts, is checkpointed independently, and contributes independently to evaluator reliability counts. Task completion still requires all applicable criteria to pass. A failed evaluator call leaves completion unassessed, rather than failing the answering system. Known bracketed citation handles are removed from the factual-support view while the original answer is preserved for citation auditing.

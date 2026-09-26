@@ -20,7 +20,8 @@ def main():
     if not files:parser.error('No saved comparison pairs found')
     if args.output.resolve()==args.source.resolve():parser.error('Original artifacts must not be overwritten')
     originals=[json.loads(p.read_text()) for p in files]
-    bound=sum(2*(1+2*math.ceil(len(answer_claims(p[s]))/2)) for p in originals for s in ('agent','baseline'))
+    case_map={c['id']:c for c in json.loads((args.source/'manifest.json').read_text())['source_manifest']['cases']}
+    bound=sum(2*(len(case_map[p['case_id']]['criteria'])+2*math.ceil(len(answer_claims(p[s]))/2)) for p in originals for s in ('agent','baseline'))
     print(f'{len(files)} saved pairs; 0 new answers; at most {bound} local judge requests including retries.',flush=True)
     if args.dry_run:return
     if args.max_requests<bound:parser.error('Explicit --max-requests must cover the printed bound')
