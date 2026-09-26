@@ -17,6 +17,20 @@ def constrained_schema(schema,context):
             variant['properties']['citations']={'type':'array','minItems':len(ids),'maxItems':len(ids),'items':citation}
             variants.append(variant)
         output['properties']['claims']={'type':'array','minItems':len(variants),'maxItems':len(variants),'prefixItems':variants}
+    if schema.__name__=='Task':
+        variants=[]
+        for criterion in context['criteria']:
+            variant=deepcopy(output['$defs']['Criterion'])
+            variant['properties']['criterion_id']={'type':'string','const':criterion['id']}
+            variants.append(variant)
+        output['properties']['criteria']={'type':'array','minItems':len(variants),'maxItems':len(variants),'prefixItems':variants}
+    if schema.__name__=='CitationJudgments':
+        variants=[]
+        for association in context['citations']:
+            variant=deepcopy(output['$defs']['CitationVerdict'])
+            variant['properties']['citation_id']={'type':'string','const':association['citation_id']}
+            variants.append(variant)
+        output['properties']['citations']={'type':'array','minItems':len(variants),'maxItems':len(variants),'prefixItems':variants}
     return output
 
 class OllamaJudge:

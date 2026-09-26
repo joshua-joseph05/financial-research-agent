@@ -49,7 +49,7 @@ Treat retrieval/investigation wording as a requirement to communicate the result
 
 def exact(items,key,expected):
     ids=[i[key] for i in items]
-    if len(ids)!=len(set(ids)) or set(ids)!=set(expected):raise ValueError('Missing, duplicate or unknown judgment IDs')
+    if len(ids)!=len(set(ids)) or set(ids)!=set(expected):raise ValueError(f'Missing, duplicate or unknown judgment IDs: expected {sorted(expected)}, received {ids}')
 
 def validate_claims(data,context):
     claims=context['claims'];records={e['id']:e for e in context['available_evidence']}

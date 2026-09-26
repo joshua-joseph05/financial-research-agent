@@ -244,3 +244,14 @@ def test_rejudge_cli_preserves_original_answers_and_resumes_without_calls(tmp_pa
     monkeypatch.setattr(sys,'argv',argv+['--resume']);cli.main()
     assert len(calls)==count
     assert json.loads((output/'comparison-v2.json').read_text())==result
+
+def test_task_schema_requires_every_criterion_and_citation_schema_every_association():
+    from app.evaluation.v2.transport import constrained_schema
+    from app.evaluation.v2.rubric import CitationJudgments
+    context={'criteria':[{'id':f'criterion-{i}'} for i in (1,2,3)]}
+    items=constrained_schema(Task,context)['properties']['criteria']
+    assert items['minItems']==items['maxItems']==3
+    assert [i['properties']['criterion_id']['const'] for i in items['prefixItems']]==['criterion-1','criterion-2','criterion-3']
+    citations=constrained_schema(CitationJudgments,{'citations':[{'citation_id':'a'},{'citation_id':'b'}]})['properties']['citations']
+    assert citations['minItems']==citations['maxItems']==2
+    assert [i['properties']['citation_id']['const'] for i in citations['prefixItems']]==['a','b']
