@@ -98,6 +98,7 @@ def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--case',default='financial_data-01',help='Case ID or all')
     parser.add_argument('--category')
+    parser.add_argument('--case-ids',help='Comma-separated case IDs for an explicit smaller benchmark')
     parser.add_argument('--mode',choices=['frozen','live'],default='frozen')
     parser.add_argument('--target',choices=['assistant','sentiment'],default='assistant')
     parser.add_argument('--sentiment',choices=['enabled','disabled','paired'],default='enabled')
@@ -115,6 +116,10 @@ def main():
     args=parser.parse_args()
     if not 1<=args.repeats<=3 or not 4<=args.budget<=36 or not 1<=args.judge_budget<=48:parser.error('repeats: 1–3; agent budget: 4–36; judge budget: 1–48')
     cases=[c for c in load_cases() if (args.case=='all' or c.id==args.case) and (not args.category or c.category==args.category)]
+    if args.case_ids:
+        selected=set(args.case_ids.split(','))
+        if selected-{c.id for c in cases}:parser.error('Unknown or filtered case IDs')
+        cases=[c for c in cases if c.id in selected]
     if args.target=='sentiment':cases=[c for c in cases if c.sentiment_target]
     if not cases:parser.error('No matching cases; use --case all when selecting a category or sentiment target')
     if args.mode=='live' and any(c.scenario!='normal' for c in cases):parser.error('Live runs cannot reproduce frozen failure scenarios; choose normal cases')
@@ -141,7 +146,7 @@ def main():
     items=[]
     if args.resume:
         previous=json.loads((args.output/'manifest.json').read_text())
-        keys=('case','category','mode','target','sentiment','repeats','budget','judge','judge_provider','judge_model','judge_budget','seed')
+        keys=('case','case_ids','category','mode','target','sentiment','repeats','budget','judge','judge_provider','judge_model','judge_budget','seed')
         if previous['cases']!=manifest['cases'] or any(previous['options'].get(k)!=manifest['options'].get(k) for k in keys) or previous['provider']!=manifest['provider']:
             parser.error('Resume configuration differs from the original experiment')
         previous.setdefault('resumptions',[]).append({'at':manifest['created_at'],'code_and_data_sha256':manifest['code_and_data_sha256'],'git_revision':revision})

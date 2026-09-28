@@ -4,7 +4,7 @@ import re
 from datetime import date, datetime, timezone
 from typing import TypedDict, Any
 from langgraph.graph import StateGraph, START, END
-from app.ideas.models import IdeasPlan, IdeasDraft, IdeasReview, IdeasSelection, IdeasClarification, IdeasInvestigation, EducationalAnswer, EducationalReview
+from app.ideas.models import IdeasPlan, IdeasDraft, IdeasReview, IdeasSelection, IdeasClarification, IdeasInvestigation, EducationalAnswer, EducationalReview, EducationPlan, EducationalCoverageReview
 from app.ideas.market import snapshot
 from app.ideas.sentiment import handoff
 from app.agent.graph import numeric_check
@@ -67,10 +67,14 @@ def validate_idea(idea, observations):
     return None
 
 
-def run_ideas(request, model, registry, emit=lambda event:None, snapshot_fn=snapshot, guide_fn=None):
+def run_ideas(request, model, registry, emit=lambda event:None, snapshot_fn=snapshot, guide_fn=None, education_plan=None):
     from app.ideas.telemetry import MeteredModel, MeteredRegistry
     model=model if isinstance(model,MeteredModel) else MeteredModel(model,request.max_model_requests)
     registry=MeteredRegistry(registry)
+    if education_plan is not None:
+        education_plan=EducationPlan.model_validate(education_plan)
+    if hasattr(registry,'snapshot') and snapshot_fn is snapshot:
+        snapshot_fn=registry.snapshot
     original_snapshot=snapshot_fn
     def snapshot_fn(ticker,benchmark=False):
         started=time.monotonic();status='error'
@@ -103,6 +107,8 @@ def run_ideas(request, model, registry, emit=lambda event:None, snapshot_fn=snap
         if remaining<=0: raise TimeoutError('Stock-idea time limit reached')
         return model.respond('ideas_'+phase,context,schema,timeout=min(90,remaining))
     def resolve(state):
+        if education_plan is not None and not state['request']['tickers']:
+            return {'selection':{'kind':'education','topics':list(dict.fromkeys(education_plan.topics)),'parts':education_plan.parts,'tickers':[],'message':'General investing explanation using public investor-education sources.'}}
         if state['request']['tickers']:
             if state['request']['mode']=='compare' and len(state['request']['tickers'])<2:
                 raise IdeasClarification('Enter at least two companies to compare.')
@@ -142,7 +148,7 @@ def run_ideas(request, model, registry, emit=lambda event:None, snapshot_fn=snap
         announce('education','Looking up sources for your investing question')
         for topic in state['selection']['topics']:
             try:
-                result=(guide_fn or investing_guide)(GuideArgs(topic=topic))
+                result=guide_fn(GuideArgs(topic=topic)) if guide_fn else registry.execute(ToolCall(name='get_investing_guide',arguments={'topic':topic}),observations)
                 observations.update({e.id:e.model_dump() for e in result.evidence})
                 sources.update({source.id:source.model_dump() for source in result.sources})
                 limitations.extend(result.limitations)
@@ -151,12 +157,19 @@ def run_ideas(request, model, registry, emit=lambda event:None, snapshot_fn=snap
         sections=[];followups=[]
         if observations:
             try:
-                draft=ask('education',EducationalAnswer,{'request':state['request'],'observations':observations,'instruction':'Answer the actual question in everyday language using ONLY these sources. Return short sections with source evidence IDs. State missing coverage in remaining_questions. No company picks, current prices, tax/legal specifics, personalized allocations, or promises. Do not invent calculations. If a question is outside these sources explain what information is missing.'})
+                draft=ask('education',EducationalAnswer,{'request':state['request'],'observations':observations,**({'requested_parts':education_plan.parts} if education_plan else {}),'instruction':'Answer the actual question in everyday language using ONLY these sources. Return short sections with source evidence IDs. State missing coverage in remaining_questions. No company picks, current prices, tax/legal specifics, personalized allocations, or promises. Do not invent calculations. If a question is outside these sources explain what information is missing.' + (' Address EACH requested_parts item explicitly in the sections, including the explanation rather than only yes/no or a heading. If sources cannot establish a part, name that gap in remaining_questions. Use one or two short sentences for a simple question; combine overlapping requirements. Paraphrase only the relevant supplied source statements. Do not expand a definition with details from general knowledge, even if usually true. Every additional detail needs support in the cited excerpt. Answer directly without repeating the question or source limitations. Add remaining_questions ONLY for a requested part you cannot answer, otherwise return an empty list. Do not add background topics or invent extra facts.' if education_plan else '')})
                 valid=all(all(i in observations for i in section.evidence_ids) and numeric_check(section.text,[observations[i] for i in section.evidence_ids]) for section in draft.sections)
                 if valid:
-                    review=ask('education_review',EducationalReview,{'question':state['request']['question'],'draft':draft.model_dump(),'observations':observations,'instruction':'Check every section against ONLY its cited evidence. All material statements must be supported, relevant to the question, and not personalized advice or unsupported current facts. Reject if any section fails.'})
+                    review=ask('education_review',EducationalCoverageReview if education_plan else EducationalReview,{'question':state['request']['question'],'draft':draft.model_dump(),'observations':observations,**({'requested_parts':education_plan.parts} if education_plan else {}),'instruction':'Check every section against ONLY its cited evidence. All material statements must be supported, relevant to the question, and not personalized advice or unsupported current facts. Reject if any section fails.' + (' Also assess every zero-based requested part exactly once: For covered_parts select the zero-based answer_section_index in draft.sections whose TEXT actually answers that part; otherwise put the part index in missing_parts. A section may cover multiple parts. Source contents, headings, and promises to answer do not count. A correct answer must explicitly state the requested explanation or comparison. Select existing answer sections only; never a source index. Reject added details absent from the cited excerpt even when they sound plausible. Keep explanation to a short verdict; do not repeat the draft.' if education_plan else '')})
+                    if education_plan:
+                        indices=[c.part_index for c in review.covered_parts]+review.missing_parts
+                        if sorted(indices)!=list(range(len(education_plan.parts))):
+                            raise ValueError('Incomplete or duplicate question-part review')
+                        if any(c.answer_section_index >= len(draft.sections) or not draft.sections[c.answer_section_index].text.strip() for c in review.covered_parts):
+                            raise ValueError('Coverage section is not in the answer')
+                        followups=[education_plan.parts[i] for i in review.missing_parts]
                     if review.supported:sections=[section.model_dump() for section in draft.sections]
-                followups=draft.remaining_questions
+                followups=list(dict.fromkeys(followups+draft.remaining_questions))
                 if not sections:limitations.append('The drafted explanation did not pass source checks; unsupported text was withheld.')
             except Exception as error:
                 limitations.append('Explanation unavailable ('+type(error).__name__+').')

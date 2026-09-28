@@ -118,3 +118,19 @@ class EducationalReview(Model):
     supported: bool
     explanation: str = Field(max_length=300)
 
+
+
+class EducationPlan(Model):
+    topics: list[Literal['diversification','stocks','bonds','funds']] = Field(min_length=1,max_length=4)
+    parts: list[str] = Field(min_length=1,max_length=4)
+
+
+class EducationalPartCheck(Model):
+    part_index: int = Field(ge=0,le=3)
+    answer_section_index: int = Field(ge=0,le=4)
+
+
+class EducationalCoverageReview(EducationalReview):
+    explanation: str = Field(max_length=160)
+    covered_parts: list[EducationalPartCheck] = Field(max_length=4)
+    missing_parts: list[int] = Field(max_length=4)

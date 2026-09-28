@@ -16,7 +16,7 @@ def descriptions(registry):
 
 
 def execute(registry,call,observations):
-    if call.name!='search_web':return registry.execute(call,observations)
+    if call.name!='search_web' or getattr(registry,'transport',None)=='mcp':return registry.execute(call,observations)
     args=WebSearchArgs.model_validate(call.arguments)
     if not getattr(registry,'sec',None):return ToolResult(status='no_data',limitations=['Web news search requires a configured SEC issuer resolver.'])
     return news(registry.sec,args)

@@ -60,6 +60,10 @@ flowchart TD
     Router -->|Investment ideas, suitability, comparisons| Investment["Investment assessment workflow"]
     Router -->|General investing concepts| Education["Education branch"]
     Router -->|Ambiguous or unsupported request| Clarify["Return a clarification"]
+    Research <-->|Tool calls and evidence| MCP["Local MCP financial-tools server"]
+    Investment <--> MCP
+    Education <--> MCP
+    MCP --> Providers["Financial APIs and Python calculations"]
     Research --> Report["Source-linked answer and limitations"]
     Investment --> Report
     Education --> Report
@@ -106,6 +110,7 @@ answer the question. “What is diversification?” takes the education branch.
 | **Company research graph** | Plan, investigate, assess, verify and synthesize | [Research graph](backend/app/agent/graph.py) |
 | **Investment and education graph** | Collect evidence, select further tools, consult sentiment when useful, review the answer | [Investment graph](backend/app/ideas/graph.py) |
 | **Sentiment agent** | Find and read recent public articles; return attributed, reviewed arguments | [Sentiment agent](backend/app/ideas/sentiment.py) |
+| **MCP server and client** | Serve financial tools over stdio with session-local evidence | [Server](backend/app/mcp/server.py) · [Client](backend/app/mcp/client.py) |
 | **Tools and Python checks** | Retrieve evidence, calculate metrics and preserve source lineage | [Tool registry](backend/app/tools/registry.py) · [Investment tools](backend/app/ideas/tools.py) |
 | **LLM adapters** | Structured planning, tool selection, interpretation and source review | [Ollama](backend/app/providers/llm.py) · [OpenRouter](backend/app/providers/openrouter.py) |
 
@@ -122,7 +127,7 @@ Redis, Celery, authentication or general-purpose delegation framework is require
 
 ### Optional sentiment consultation
 
-The lead uses financial APIs and Python tools directly. It can call its
+The lead calls financial APIs and Python calculation tools through the local MCP server. It can call its
 `consult_sentiment` agent for a selected
 company when market expectations or competing investment arguments matter.
 There is no general delegation planner, dynamic worker creation, or separate
@@ -329,9 +334,12 @@ activity to stderr; the JSON report is written to stdout.
 
 ## Tools and data
 
-Tools are ordinary Python functions registered with schemas, **not MCP servers**.
-Both workflows reuse the shared registry; the investment workflow also has a
-scoped news-search tool.
+**MCP is the required financial-tool transport.** The backend starts one local
+stdio MCP server for each research run and closes it when that run ends. Tool
+implementations remain Python functions inside the server; there is no direct-call
+fallback. Both workflows share this transport, including scoped news searches,
+price snapshots and education guides. Sentiment article discovery/reading remains
+inside the sentiment specialist. See [MCP setup and testing](MCP.md).
 
 | Tool | Responsibility |
 | --- | --- |
@@ -373,6 +381,7 @@ financial-research-agent/
 │   │   ├── cli.py              # research command
 │   │   ├── agent/              # Company research graph
 │   │   ├── ideas/              # Investment graph, sentiment worker, telemetry
+│   │   ├── mcp/                # Required stdio financial-tool server and client
 │   │   ├── tools/              # Tool schemas, registry, calculations
 │   │   ├── providers/          # LLM adapters and public-source clients
 │   │   ├── evaluation/         # Paired runs, fictional fixtures, scoring

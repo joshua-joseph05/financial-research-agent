@@ -8,6 +8,7 @@ from app.providers.demo import DemoModel
 from app.providers.openrouter import create_model
 from app.providers.sec import SECClient
 from app.tools.registry import ToolRegistry
+from app.mcp.client import MCPToolRegistry
 
 
 def main():
@@ -26,13 +27,14 @@ def main():
         if args.mode == "demo" and data != "fixture":
             raise ValueError("Scripted demo supports fixture data only")
         if data == "sec":
-            sec = SECClient(os.getenv("SEC_USER_AGENT", ""))
+            sec = None
         model = DemoModel() if args.mode == "demo" else create_model(args.model)
         def progress(event):
             if args.trace:
                 print(f"[{event['phase']}] {event['event']}", file=sys.stderr, flush=True)
+        sec = MCPToolRegistry(data=data)
         state = run_research(args.question, model, Limits(max_tool_calls=args.max_tools,
-            seconds=args.seconds, finalization_reserve=min(90, args.seconds / 3)), on_event=progress, registry=ToolRegistry(sec=sec))
+            seconds=args.seconds, finalization_reserve=min(90, args.seconds / 3)), on_event=progress, registry=sec)
     except ValueError as error:
         parser.error(str(error))
     finally:

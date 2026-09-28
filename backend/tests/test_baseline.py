@@ -182,3 +182,28 @@ def test_comparison_claim_batches_fit_local_output_budget(agent):
     result=judge_run(case(),agent,Audit(),answer_only=True)
     assert sizes==[3,3,3,1]
     assert result['metrics']['claim_assessment_coverage']['rate']==1
+
+def test_small_benchmark_has_distinct_prompts_and_balanced_categories():
+    from pathlib import Path
+    from collections import Counter
+    from app.evaluation.benchmark_data import load_cases
+    ids=json.loads((Path(__file__).parents[1]/'app/evaluation/benchmark18.json').read_text())['case_ids']
+    cases={c.id:c for c in load_cases()}
+    assert len(ids)==len(set(ids))==18
+    selected=[cases[key] for key in ids]
+    assert len({c.question.casefold().strip() for c in selected})==18
+    assert len(Counter(c.category for c in selected))==9
+    assert set(Counter(c.category for c in selected).values())=={2}
+
+
+def test_answers_only_skips_legacy_judges_and_preserves_baseline_on_resume(agent):
+    def forbidden():
+        raise AssertionError('Legacy judge must not run')
+    model=BaselineModel()
+    pair=compare_pair(case(),agent,model,forbidden,assess=False)
+    assert len(model.contexts)==1
+    assert pair['judgments']=={}
+    assert 'calculations' in pair
+    assert comparison_summary([pair],{case().category:1})['metrics']['task_completion']['paired_cases']==0
+    compare_pair(case(),agent,model,forbidden,cached=pair,assess=False)
+    assert len(model.contexts)==1

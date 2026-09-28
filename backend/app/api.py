@@ -16,6 +16,7 @@ from app.providers.demo import DemoModel
 from app.providers.openrouter import create_model, ModelProviderError, MODEL
 from app.providers.sec import SECClient
 from app.tools.registry import ToolRegistry
+from app.mcp.client import MCPToolRegistry
 from app.ideas.models import IdeasRequest, IdeasClarification
 from app.ideas.graph import run_ideas, SYSTEM as IDEAS_SYSTEM
 
@@ -45,24 +46,14 @@ def health():
 
 
 def perform_research(payload, emit):
-    sec = None
-    try:
-        if payload.mode == "live":
-            sec = SECClient(os.getenv("SEC_USER_AGENT", ""))
-        model = DemoModel() if payload.mode == "demo" else create_model()
-        state = run_research(payload.question, model, registry=ToolRegistry(sec=sec), on_event=emit)
-        return state["report"]
-    finally:
-        if sec:
-            sec.close()
+    model = DemoModel() if payload.mode == "demo" else create_model()
+    with MCPToolRegistry(data='fixture' if payload.mode=='demo' else 'sec') as registry:
+        return run_research(payload.question, model, registry=registry, on_event=emit)["report"]
 
 
 def perform_ideas(payload, emit):
-    sec = SECClient(os.getenv("SEC_USER_AGENT", ""))
-    try:
-        return run_ideas(payload, create_model(system_prompt=IDEAS_SYSTEM), ToolRegistry(sec=sec), emit)
-    finally:
-        sec.close()
+    with MCPToolRegistry() as registry:
+        return run_ideas(payload, create_model(system_prompt=IDEAS_SYSTEM), registry, emit)
 
 
 @app.post('/assistant')

@@ -367,7 +367,7 @@ def test_general_question_routes_to_sourced_education_without_stocks(monkeypatch
             if phase=='ideas_education':return EducationalAnswer(sections=[EducationalSection(title='Diversification',text='Diversification spreads investments across assets to reduce concentration risk.',evidence_ids=['guide:one'])])
             if phase=='ideas_education_review':return EducationalReview(supported=True,explanation='Supported.')
             pytest.fail('Unexpected company research')
-    report=run_ideas(IdeasRequest(question='What is diversification?'),Educator(),Registry(),snapshot_fn=lambda *a,**kw:pytest.fail('No stock data needed'))
+    report=run_ideas(IdeasRequest(question='What is diversification?'),Educator(),Registry(),guide_fn=guide,snapshot_fn=lambda *a,**kw:pytest.fail('No stock data needed'))
     assert report['feature']=='investment_education'
     assert report['complete'] and report['answer_sections']
     assert not report['ideas']

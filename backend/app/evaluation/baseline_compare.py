@@ -53,7 +53,7 @@ def load_agent_runs(directory,manifest,allow_partial=False):
     return runs
 
 
-def compare_pair(case,agent,base_model,judge_factory,baseline_budget=2,judge_budget=12,seed=42,progress=None,cached=None,save=None):
+def compare_pair(case,agent,base_model,judge_factory,baseline_budget=2,judge_budget=12,seed=42,progress=None,cached=None,save=None,assess=True):
     progress=progress or (lambda text:None)
     bundle,digest=evidence_bundle(agent)
     pair=cached or {'id':agent['label']+'-comparison','case_id':case.id,'category':case.category,'question':case.question,
@@ -64,7 +64,7 @@ def compare_pair(case,agent,base_model,judge_factory,baseline_budget=2,judge_bud
         if save:save(pair)
     order=['agent','baseline'];random.Random(str(seed)+pair['id']).shuffle(order)
     pair['judge_order']=order
-    for system in order:
+    for system in order if assess else []:
         if system in pair['judgments']:continue
         progress('Assessing anonymous answer '+str(order.index(system)+1)+' of 2')
         try:
@@ -98,11 +98,12 @@ def main():
     parser.add_argument('--resume',action='store_true')
     parser.add_argument('--allow-partial',action='store_true')
     parser.add_argument('--dry-run',action='store_true')
+    parser.add_argument('--answers-only',action='store_true',help='Save baseline answers without invoking legacy judges; assess later with a versioned evaluator')
     args=parser.parse_args()
     if not 1<=args.baseline_budget<=4 or not 1<=args.judge_budget<=48:parser.error('Baseline budget 1–4; judge budget 1–48')
     original=json.loads((args.agent_directory/'manifest.json').read_text())
-    planned=original['planned_runs'];bound=planned*(args.baseline_budget+2*args.judge_budget)
-    print(f'{planned} planned pairs; at most {bound} additional model requests (baseline plus two fresh judges).',flush=True)
+    planned=original['planned_runs'];bound=planned*(args.baseline_budget+(0 if args.answers_only else 2*args.judge_budget))
+    print(f'{planned} planned pairs; at most {bound} additional model requests. Legacy judging: {not args.answers_only}.',flush=True)
     if args.dry_run:return
     if bound>args.max_requests:parser.error('Raise --max-requests explicitly or use a smaller source experiment')
     if args.output.exists() and not args.resume:parser.error('Output exists; use a new directory or --resume')
@@ -114,6 +115,7 @@ def main():
         repeats=original['options']['repeats'];variants=2 if original['options']['sentiment']=='paired' else 1
         categories={category:n*repeats*variants for category,n in Counter(c.category for c in cases.values()).items()}
         settings={k:str(v) if isinstance(v,Path) else v for k,v in vars(args).items() if k not in ('wait','resume','dry_run','max_requests')}
+        if not args.answers_only:settings.pop('answers_only',None)
         path=args.output/'manifest.json'
         if path.exists():
             manifest=json.loads(path.read_text())
@@ -144,7 +146,7 @@ def main():
                 def judge_factory():
                     with patch.dict(os.environ,{'LLM_PROVIDER':args.judge_provider or provider}):
                         return create_model(args.judge_model or agent['model']['name'],system_prompt=JUDGE_SYSTEM)
-                pair=compare_pair(cases[agent['case_id']],agent,baseline_model,judge_factory,args.baseline_budget,args.judge_budget,args.seed,progress,cached,lambda value:write_json(target,value))
+                pair=compare_pair(cases[agent['case_id']],agent,baseline_model,judge_factory,args.baseline_budget,args.judge_budget,args.seed,progress,cached,lambda value:write_json(target,value),assess=not args.answers_only)
                 pairs=[p for p in pairs if p['id']!=pair['id']]+[pair];save_report(args.output,pairs,categories)
                 progress('Pair saved')
         manifest['state']='complete' if len(pairs)==planned else 'partial'

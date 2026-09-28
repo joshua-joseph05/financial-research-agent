@@ -61,7 +61,7 @@ class RecordingRegistry:
         finally:item['seconds']=round(time.monotonic()-start,4)
 
 
-def run_case(case,base_model,budget=36,mode='frozen',sentiment=True,target='assistant',registry=None,progress=None):
+def run_case(case,base_model,budget=36,mode='frozen',sentiment=True,target='assistant',registry=None,progress=None,execution_profile='standard'):
     """Sequential only: local patches are scoped to this dedicated evaluation process."""
     import os
     import app.ideas.tools as ideas_tools
@@ -101,8 +101,8 @@ def run_case(case,base_model,budget=36,mode='frozen',sentiment=True,target='assi
         return original_execute(registry_arg,call,observations)
     def research(*args,**kwargs):
         state=run_research(*args,**kwargs);states['research']=state;return state
-    def ideas(request,meter,registry_arg,emit):
-        return run_ideas(request,meter,registry_arg,emit,snapshot_fn=shot,guide_fn=guide)
+    def ideas(request,meter,registry_arg,emit,**options):
+        return run_ideas(request,meter,registry_arg,emit,snapshot_fn=shot,guide_fn=guide,**options)
     def specialist(*args,**kwargs):
         value=consult(*args,**kwargs);specialists.append(value);return value
     try:
@@ -118,7 +118,7 @@ def run_case(case,base_model,budget=36,mode='frozen',sentiment=True,target='assi
                 report=specialist(ConsultArgs(ticker=case.sentiment_target,objective=case.question[:300]),model,recorded,time.monotonic()+600,reserve=0,emit=events.append)
                 result.update(workflow='sentiment',report=report,status='returned')
             else:
-                envelope=assistant.run_assistant(assistant.AssistantRequest(question=case.question,sentiment_enabled=sentiment),events.append,model=model,registry=recorded)
+                envelope=assistant.run_assistant(assistant.AssistantRequest(question=case.question,sentiment_enabled=sentiment,execution_profile=execution_profile),events.append,model=model,registry=recorded)
                 result.update(workflow=envelope['workflow'],report=envelope['report'],status='returned')
     except IdeasClarification as error:
         result.update(status='clarification',clarification=str(error))
@@ -130,6 +130,7 @@ def run_case(case,base_model,budget=36,mode='frozen',sentiment=True,target='assi
     result['workflow']=result['workflow'] or route
     result['trace']={'model_decisions':model.decisions,'tool_calls':sorted(recorded.calls+extra_calls,key=lambda c:c['at_seconds']),'events':events,
                      'research_state':states.get('research'),'articles':articles,'sentiment_results':specialists}
+    result['execution_profile']=execution_profile
     result['model']={'class':type(base_model).__name__,'name':getattr(base_model,'model',None)}
     result['telemetry']=model.meter.report()
     result['latency_seconds']=round(time.monotonic()-started,4)

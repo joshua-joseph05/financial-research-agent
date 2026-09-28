@@ -1,0 +1,23 @@
+{
+  "description": "18 distinct prompts, two per category, curated for different research tasks. Each system answers each prompt once. This is a small descriptive evaluation, not the full 90-question benchmark.",
+  "case_ids": [
+    "financial_data-05",
+    "financial_data-09",
+    "sec_filings-03",
+    "sec_filings-10",
+    "calculations-04",
+    "calculations-09",
+    "comparisons-03",
+    "comparisons-06",
+    "open_research-05",
+    "open_research-10",
+    "investment-07",
+    "investment-10",
+    "sentiment_news-02",
+    "sentiment_news-05",
+    "education-01",
+    "education-06",
+    "insufficient_evidence-01",
+    "insufficient_evidence-07"
+  ]
+}
