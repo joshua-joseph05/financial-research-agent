@@ -32,7 +32,7 @@ class FrozenSEC:
         matches=[t for t,n in NAMES.items() if value.strip().lower() in (t.lower(),n.lower())]
         if len(matches)!=1: raise ValueError('Ambiguous or uncovered company')
         ticker=matches[0]
-        return ticker,'fictional',NAMES[ticker]
+        return ticker,'fictional:'+ticker,NAMES[ticker]
 
 class BenchmarkRegistry(ToolRegistry):
     def __init__(self, scenario='normal'):

@@ -1,0 +1,14 @@
+{
+  "development": [],
+  "validation": [
+    "fresh40-financial_data",
+    "fresh40-sec_filings",
+    "fresh40-calculations",
+    "fresh40-comparisons",
+    "fresh40-open_research",
+    "fresh40-investment",
+    "fresh40-sentiment_news",
+    "fresh40-education",
+    "fresh40-insufficient_evidence"
+  ]
+}

@@ -37,6 +37,8 @@ class Model:
             from app.ideas.models import IdeasInvestigation
             return IdeasInvestigation(action='finish',reason='Sufficient test evidence.')
         if phase=='ideas_plan':return IdeasPlan(checks=['financial_performance','disclosed_risks'])
+        if phase=='ideas_claim_review':
+            return schema.model_validate({'actions':[{'ticker':a['ticker'],'supported':self.approve} for a in context['actions']],'checks':[{'claim_id':c['claim_id'],'supported':self.approve,'quotes':[{'evidence_id':next(iter(c['evidence'])),'quote':next(iter(c['evidence'].values()))['text']}]} for c in context['claims']]})
         tickers=context['request']['tickers']
         if phase=='ideas_recommend':
             return IdeasDraft(ideas=[StockIdea(ticker=t,action='consider_gradual_buying',reasons=[Rationale(text='Annual revenue was 100 USD.',evidence_ids=['financial:'+t])],risks=[Rationale(text='Competition could reduce demand.',evidence_ids=['passage:'+t])]) for t in tickers])
@@ -419,3 +421,232 @@ def test_shared_budget_stops_calls_across_entire_workflow():
     with pytest.raises(BudgetExceeded):
         for _ in range(5):model.respond('ideas_plan',{},IdeasPlan,1)
 
+
+
+def test_efficient_plan_saves_call_without_weakening_review():
+    standard=run_ideas(IdeasRequest(tickers=['MSFT']),Model(),Registry(),snapshot_fn=shot)
+    candidate=run_ideas(IdeasRequest(tickers=['MSFT']),Model(),Registry(),snapshot_fn=shot,execution_profile='efficient')
+    assert [{k:v for k,v in c.items() if k not in ('reasons','research_checks')} for c in standard['ideas']]==[{k:v for k,v in c.items() if k not in ('reasons','research_checks')} for c in candidate['ideas']]
+    assert candidate['ideas'][0]['reasons'][0]['evidence_ids']==standard['ideas'][0]['reasons'][0]['evidence_ids']
+    assert '100 USD' in candidate['ideas'][0]['reasons'][0]['text']
+    assert candidate['telemetry']['model_calls']==standard['telemetry']['model_calls']-1
+    assert 'ideas_plan' not in [c['phase'] for c in candidate['telemetry']['calls']]
+    model=Model();model.approve=False
+    rejected=run_ideas(IdeasRequest(tickers=['MSFT']),model,Registry(),snapshot_fn=shot,execution_profile='efficient')
+    assert not rejected['complete'] and rejected['ideas'][0]['partial']
+    assert rejected['ideas'][0]['action']=='watch' and not rejected['ideas'][0]['verified']
+    assert '100 USD' in rejected['ideas'][0]['reasons'][0]['text']
+    assert not rejected['ideas'][0]['risks']
+
+
+def test_partial_claim_review_keeps_supported_evidence_without_approving_action():
+    class Partial(Model):
+        def respond(self,phase,context,schema,timeout):
+            result=super().respond(phase,context,schema,timeout)
+            if phase=='ideas_claim_review':
+                result.checks[0].supported=False
+                result.actions[0].supported=False
+            return result
+    report=run_ideas(IdeasRequest(tickers=['MSFT']),Partial(),Registry(),snapshot_fn=shot,execution_profile='efficient')
+    card=report['ideas'][0]
+    assert not report['complete'] and not card['verified']
+    assert card['action']=='watch' and card['partial']
+    assert len(card['reasons'])==1 and card['risks']==[]
+    assert 'incomplete' in card['caution']
+
+
+def test_review_outage_retains_python_facts_without_approving_action():
+    class Unavailable(Model):
+        def respond(self,phase,context,schema,timeout):
+            if phase=='ideas_claim_review':
+                assert all('100 USD' not in item['text'] for item in context['claims'])
+                assert any('100 USD' in item['text'] for item in context['python_verified_claims'])
+                raise RuntimeError('Review unavailable')
+            return super().respond(phase,context,schema,timeout)
+    report=run_ideas(IdeasRequest(tickers=['MSFT']),Unavailable(),Registry(),snapshot_fn=shot,execution_profile='efficient')
+    card=report['ideas'][0]
+    assert not report['complete'] and not card['verified']
+    assert card['partial'] and card['action']=='watch'
+    assert len(card['reasons'])==1 and not card['risks']
+    assert any('review unavailable' in entry for entry in report['limitations'])
+
+
+def test_efficient_duplicate_call_stops_without_reexecuting_tool():
+    from app.ideas.models import IdeasInvestigation
+    class Repeater(Model):
+        decisions=0
+        def respond(self,phase,context,schema,timeout):
+            if phase=='ideas_investigate':
+                self.decisions+=1
+                return IdeasInvestigation(action='tool',reason='Check cash flow.',tool={'name':'get_financial_metric_history','arguments':{'ticker':'MSFT','metric':'operating_cash_flow','years':3}})
+            return super().respond(phase,context,schema,timeout)
+    model=Repeater()
+    report=run_ideas(IdeasRequest(tickers=['MSFT']),model,Registry(),snapshot_fn=shot,execution_profile='efficient')
+    assert model.decisions==2
+    assert [c['status'] for c in report['tool_calls']]==['ok','duplicate_skipped']
+    assert any('Remaining questions are unresolved' in line for line in report['limitations'])
+
+
+def test_checklist_does_not_treat_unretained_facts_as_completed_research():
+    model=Model();model.approve=False
+    report=run_ideas(IdeasRequest(tickers=['MSFT']),model,Registry(),snapshot_fn=shot,execution_profile='efficient')
+    checks=report['ideas'][0]['research_checks']
+    assert len(checks)==5
+    assert checks[1]['evidence_ids']==['financial:MSFT']
+    assert 'not complete' in checks[1]['coverage']
+    assert not checks[3]['evidence_ids']  # Rejected risk is not a checklist citation.
+    assert all('Not established' in checks[i]['coverage'] for i in (0,2,3,4))
+    assert not report['complete']
+
+
+@pytest.mark.parametrize('section',[None,'risks'])
+def test_initial_collection_is_visible_and_cannot_be_repeated(section):
+    from app.ideas.models import IdeasInvestigation
+    class TrackingRegistry(Registry):
+        calls=[]
+        def descriptions(self):
+            return super().descriptions()+[{'name':name,'description':name,'input_schema':{}} for name in ('get_financials','get_sec_filings')]
+        def execute(self,call,observations):
+            self.calls.append(call.model_dump())
+            return super().execute(call,observations)
+    class InitialRepeater(Model):
+        def respond(self,phase,context,schema,timeout):
+            if phase=='ideas_investigate':
+                assert len(context['previous_tool_calls'])==2
+                assert all(c['phase']=='initial_collection' for c in context['previous_tool_calls'])
+                return IdeasInvestigation(action='tool',reason='Get initial data again.',tool={
+                    'name':'get_sec_filings' if section else 'get_financials',
+                    'arguments':{'ticker':'MSFT',**({'section':section} if section else {})}})
+            return super().respond(phase,context,schema,timeout)
+    registry=TrackingRegistry();registry.calls=[]
+    report=run_ideas(IdeasRequest(tickers=['MSFT']),InitialRepeater(),registry,snapshot_fn=shot,execution_profile='efficient')
+    assert len(registry.calls)==2
+    assert report['tool_calls'][0]['status']=='duplicate_skipped'
+    assert any('Remaining questions are unresolved' in line for line in report['limitations'])
+
+
+def test_supported_claims_are_not_labelled_failed_when_only_action_is_rejected():
+    class RejectAction(Model):
+        def respond(self,phase,context,schema,timeout):
+            result=super().respond(phase,context,schema,timeout)
+            if phase=='ideas_claim_review':
+                for action in result.actions:action.supported=False
+            return result
+    report=run_ideas(IdeasRequest(tickers=['MSFT']),RejectAction(),Registry(),snapshot_fn=shot,execution_profile='efficient')
+    card=report['ideas'][0]
+    assert card['partial'] and not card['verified'] and card['action']=='watch'
+    assert 'findings passed source checks' in card['caution']
+    assert 'action did not pass review' in card['caution']
+    assert not report['complete']
+
+
+@pytest.mark.parametrize('approve',[True,False])
+def test_informational_results_do_not_issue_timing_advice_or_bypass_review(approve):
+    class Informational(Model):
+        def respond(self,phase,context,schema,timeout):
+            result=super().respond(phase,context,schema,timeout)
+            if phase=='ideas_recommend':
+                result.answer_intent='information'
+            return result
+    model=Informational();model.approve=approve
+    report=run_ideas(IdeasRequest(tickers=['MSFT'],question='What should I research about Microsoft?'),model,Registry(),snapshot_fn=shot,execution_profile='efficient')
+    card=report['ideas'][0]
+    assert card['action']=='research_only'
+    assert card['timing']==''
+    if not approve:
+        assert not card['verified'] and not report['complete']
+        assert 'incomplete' in card['caution']
+        assert not card['risks']
+
+
+def test_standard_results_retain_existing_action_behavior():
+    class Informational(Model):
+        def respond(self,phase,context,schema,timeout):
+            result=super().respond(phase,context,schema,timeout)
+            if phase=='ideas_recommend':result.answer_intent='information'
+            return result
+    report=run_ideas(IdeasRequest(tickers=['MSFT']),Informational(),Registry(),snapshot_fn=shot)
+    assert report['ideas'][0]['action']=='watch'
+    assert report['ideas'][0]['timing']
+
+
+def test_informational_intent_is_required_in_efficient_provider_schema():
+    from app.providers.llm import response_schema
+    assert 'answer_intent' in response_schema('ideas_recommend',{'classify_answer_intent':True},IdeasDraft)['required']
+    assert 'answer_intent' not in response_schema('ideas_recommend',{},IdeasDraft)['required']
+
+
+def test_informational_intent_survives_multiple_company_batches():
+    class Informational(Model):
+        def respond(self,phase,context,schema,timeout):
+            result=super().respond(phase,context,schema,timeout)
+            if phase=='ideas_recommend':result.answer_intent='information'
+            return result
+    report=run_ideas(IdeasRequest(tickers=['MSFT','NVDA','AMD','AAPL']),Informational(),Registry(),snapshot_fn=shot,execution_profile='efficient')
+    assert len(report['ideas'])==4
+    assert all(c['action']=='research_only' and not c['timing'] for c in report['ideas'])
+
+
+@pytest.mark.parametrize('covered,supported',[(True,True),(False,True),(True,False)])
+def test_information_completion_requires_source_support_and_question_coverage(covered,supported):
+    class Informational(Model):
+        def respond(self,phase,context,schema,timeout):
+            if phase=='ideas_claim_review':
+                assert context['actions']==[]
+                return schema.model_validate({'actions':[], 'answers_question':covered,
+                    'remaining_question':'N/A' if covered else 'The requested cash flow comparison is missing.',
+                    'checks':[{'claim_id':c['claim_id'],'supported':supported,'quotes':[{'evidence_id':next(iter(c['evidence'])),'quote':next(iter(c['evidence'].values()))['text']}]} for c in context['claims']]})
+            result=super().respond(phase,context,schema,timeout)
+            if phase=='ideas_recommend':result.answer_intent='information'
+            return result
+    report=run_ideas(IdeasRequest(tickers=['MSFT'],question='Explain Microsoft revenue and competition risks.'),Informational(),Registry(),snapshot_fn=shot,execution_profile='efficient')
+    assert report['complete']==(covered and supported)
+    assert report['ideas'][0]['action']=='research_only'
+    if not covered:assert 'Some requested information remains unverified or unanswered.' in report['limitations']
+
+
+@pytest.mark.parametrize('remaining',['','N/A','None','The requested cash-flow history is missing.'])
+def test_provisional_coverage_stops_optional_tools_but_not_explicit_gaps(remaining):
+    from app.ideas.models import QuestionInvestigation
+    class Decider(Model):
+        steps=0
+        def respond(self,phase,context,schema,timeout):
+            if phase=='ideas_investigate':
+                self.steps+=1
+                if self.steps==1:
+                    return QuestionInvestigation(action='tool',reason='Optional next tool',question_answered=True,remaining_question=remaining,tool={'name':'get_financial_metric_history','arguments':{'ticker':'MSFT','metric':'revenue'}})
+                return QuestionInvestigation(action='finish',reason='Done',question_answered=False,remaining_question=remaining)
+            return super().respond(phase,context,schema,timeout)
+    model=Decider()
+    run_ideas(IdeasRequest(tickers=['MSFT']),model,Registry(),snapshot_fn=shot,execution_profile='efficient')
+    assert model.steps==(2 if remaining=='The requested cash-flow history is missing.' else 1)
+
+
+def test_investigation_schema_requires_explicit_coverage_in_every_action_branch():
+    from app.ideas.models import QuestionInvestigation
+    from app.providers.llm import response_schema
+    schema=response_schema('ideas_investigate',{'available_tools':[{'name':'example','input_schema':{'type':'object'}}]},QuestionInvestigation)
+    assert all({'question_answered','remaining_question'}<=set(branch['required']) for branch in schema['anyOf'])
+
+
+@pytest.mark.parametrize('covered',[True,False])
+def test_unverified_reviewer_prose_is_not_published(covered):
+    feedback='Cash flow fell because management secretly diverted customer funds.'
+    class Informational(Model):
+        def respond(self,phase,context,schema,timeout):
+            if phase=='ideas_claim_review':
+                return schema.model_validate({'actions':[], 'answers_question':covered,
+                    'remaining_question':feedback,
+                    'checks':[{'claim_id':c['claim_id'],'supported':True,
+                        'quotes':[{'evidence_id':next(iter(c['evidence'])),
+                                   'quote':next(iter(c['evidence'].values()))['text']}]}
+                        for c in context['claims']]})
+            result=super().respond(phase,context,schema,timeout)
+            if phase=='ideas_recommend':result.answer_intent='information'
+            return result
+    report=run_ideas(IdeasRequest(tickers=['MSFT'],question='Explain Microsoft revenue and competition risks.'),Informational(),Registry(),snapshot_fn=shot,execution_profile='efficient')
+    import json
+    assert feedback not in json.dumps(report)
+    assert not report['complete']
+    assert report['ideas'][0]['reasons']
+    assert 'Some requested information remains unverified or unanswered.' in report['limitations']

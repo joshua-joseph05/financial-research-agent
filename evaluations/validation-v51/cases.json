@@ -1,0 +1,313 @@
+{
+  "version": "fresh-questions-v51",
+  "label_provenance": "Questions and rubrics fixed before inference. Familiar fictional fixtures, developer-authored review; not independent live-source validation.",
+  "cases": [
+    {
+      "id": "fresh51-financial_data",
+      "category": "financial_data",
+      "question": "For AMD, give me operating profit and cash from operations for each of 2024 and 2025. Keep the two measures separate.",
+      "tickers": [
+        "AMD"
+      ],
+      "expected_workflows": [
+        "research"
+      ],
+      "required_tool_groups": [
+        [
+          "get_financials",
+          "get_financial_metric_history"
+        ]
+      ],
+      "allowed_tools": [
+        "get_company_profile",
+        "get_financials",
+        "get_financial_metric_history"
+      ],
+      "criteria": [
+        "Report operating income 5 USD in 2024 and 8 USD in 2025, and operating cash flow 7 and 9 USD respectively. Clearly identify both dates, metric labels, units and matching evidence."
+      ],
+      "expected_outcome": "answer",
+      "scenario": "normal",
+      "sentiment_target": null
+    },
+    {
+      "id": "fresh51-sec_filings",
+      "category": "sec_filings",
+      "question": "What business is NVIDIA in, and what dependencies does its filing say could restrict growth? Do those disclosures establish that growth has already stopped?",
+      "tickers": [
+        "NVDA"
+      ],
+      "expected_workflows": [
+        "research"
+      ],
+      "required_tool_groups": [
+        [
+          "get_sec_filings",
+          "search_sec_filings"
+        ]
+      ],
+      "allowed_tools": [
+        "get_company_profile",
+        "get_sec_filings",
+        "search_sec_filings"
+      ],
+      "criteria": [
+        "Describe accelerated computing systems and associated software using business evidence. Identify reliance on a small group of customers and constrained advanced packaging supply using risk evidence. Explicitly distinguish prospective dependencies from proof that growth has already stopped."
+      ],
+      "expected_outcome": "answer",
+      "scenario": "normal",
+      "sentiment_target": null
+    },
+    {
+      "id": "fresh51-calculations",
+      "category": "calculations",
+      "question": "How much did Apple net income grow, in percentage terms, from 2024 to 2025? Show the figures and calculation.",
+      "tickers": [
+        "AAPL"
+      ],
+      "expected_workflows": [
+        "research"
+      ],
+      "required_tool_groups": [
+        [
+          "get_financials",
+          "get_financial_metric_history"
+        ],
+        [
+          "calculate_financial_metrics"
+        ]
+      ],
+      "allowed_tools": [
+        "get_company_profile",
+        "get_financials",
+        "get_financial_metric_history",
+        "calculate_financial_metrics"
+      ],
+      "criteria": [
+        "Use net income 75 USD in 2024 and 76 USD in 2025. Calculate (76-75)/75*100 = approximately 1.3333 percent using the deterministic tool; show inputs, dates, units and working. Do not substitute operating income or revenue."
+      ],
+      "expected_outcome": "answer",
+      "scenario": "normal",
+      "sentiment_target": null
+    },
+    {
+      "id": "fresh51-comparisons",
+      "category": "comparisons",
+      "question": "Compare the percentage growth in operating profit for NVIDIA and AMD from 2024 to 2025. Which grew faster on that measure?",
+      "tickers": [
+        "NVDA",
+        "AMD"
+      ],
+      "expected_workflows": [
+        "research",
+        "investment"
+      ],
+      "required_tool_groups": [
+        [
+          "get_financial_metric_history"
+        ]
+      ],
+      "allowed_tools": [
+        "get_company_profile",
+        "get_financials",
+        "get_financial_metric_history",
+        "calculate_financial_metrics",
+        "compare_companies"
+      ],
+      "criteria": [
+        "NVIDIA operating income 30 to 60 USD gives 100 percent growth; AMD 5 to 8 USD gives 60 percent. Show both input pairs and calculations with citations, and conclude NVIDIA grew faster on this historical measure without implying better future stock returns."
+      ],
+      "expected_outcome": "answer",
+      "scenario": "normal",
+      "sentiment_target": null
+    },
+    {
+      "id": "fresh51-open_research",
+      "category": "open_research",
+      "question": "Apple reported higher revenue and net income in 2025 than in 2024. What do the reported figures show, and is that enough to know its cash balance or ability to repay debt?",
+      "tickers": [
+        "AAPL"
+      ],
+      "expected_workflows": [
+        "research",
+        "investment"
+      ],
+      "required_tool_groups": [
+        [
+          "get_earnings_information"
+        ],
+        [
+          "get_sec_filings",
+          "search_sec_filings"
+        ]
+      ],
+      "allowed_tools": [
+        "get_company_profile",
+        "get_financials",
+        "get_financial_metric_history",
+        "get_sec_filings",
+        "search_sec_filings",
+        "calculate_financial_metrics",
+        "compare_companies",
+        "get_earnings_information",
+        "get_news",
+        "get_market_data",
+        "reconcile_financial_figures",
+        "get_investing_guide",
+        "search_web",
+        "consult_sentiment",
+        "market_snapshot"
+      ],
+      "criteria": [
+        "Report revenue 300 to 315 USD and net income 75 to 76 USD with matching periods and citations. Explain that these figures alone do not establish cash balances or debt repayment capacity; identify the additional cash/debt information needed. Do not invent cash balance, debt or a solvency conclusion."
+      ],
+      "expected_outcome": "qualified_answer",
+      "scenario": "normal",
+      "sentiment_target": null
+    },
+    {
+      "id": "fresh51-investment",
+      "category": "investment",
+      "question": "Could optimistic commentary be a good reason to buy NVIDIA for the long term? Check the company evidence too and explain what I would still need to investigate.",
+      "tickers": [
+        "NVDA"
+      ],
+      "expected_workflows": [
+        "investment",
+        "research"
+      ],
+      "required_tool_groups": [
+        [
+          "get_financials",
+          "get_financial_metric_history"
+        ],
+        [
+          "get_sec_filings",
+          "search_sec_filings"
+        ],
+        [
+          "consult_sentiment_agent"
+        ]
+      ],
+      "allowed_tools": [
+        "get_company_profile",
+        "get_financials",
+        "get_financial_metric_history",
+        "get_sec_filings",
+        "search_sec_filings",
+        "calculate_financial_metrics",
+        "compare_companies",
+        "get_earnings_information",
+        "get_news",
+        "get_market_data",
+        "reconcile_financial_figures",
+        "get_investing_guide",
+        "search_web",
+        "consult_sentiment",
+        "market_snapshot",
+        "consult_sentiment_agent"
+      ],
+      "criteria": [
+        "Treat this as a mixed opinion and investment question, not commentary-only. Include supported NVIDIA financial evidence and disclosed customer/packaging risk; attribute optimism rather than treating it as a fact or sufficient reason to buy. Identify valuation and personal-fit gaps. No guaranteed returns, unconditional purchase instruction or comprehensive market claim."
+      ],
+      "expected_outcome": "qualified_answer",
+      "scenario": "normal",
+      "sentiment_target": null
+    },
+    {
+      "id": "fresh51-sentiment_news",
+      "category": "sentiment_news",
+      "question": "What is the case for optimism about Microsoft in public commentary, what is the opposing view, and should I treat claims that the shares will double as credible expert agreement?",
+      "tickers": [
+        "MSFT"
+      ],
+      "expected_workflows": [
+        "investment",
+        "research"
+      ],
+      "required_tool_groups": [
+        [
+          "consult_sentiment",
+          "get_news",
+          "search_web"
+        ]
+      ],
+      "allowed_tools": [
+        "get_company_profile",
+        "get_financials",
+        "get_financial_metric_history",
+        "get_sec_filings",
+        "search_sec_filings",
+        "calculate_financial_metrics",
+        "compare_companies",
+        "get_earnings_information",
+        "get_news",
+        "get_market_data",
+        "reconcile_financial_figures",
+        "get_investing_guide",
+        "search_web",
+        "consult_sentiment",
+        "market_snapshot"
+      ],
+      "criteria": [
+        "Attribute AI-demand optimism to Alex Reed and investment-cost/cash-flow concerns to Jamie Park. Clearly label the doubling promise unsupported speculation. State that the bounded sample does not establish expert consensus or independently verified expertise. Do not produce a buy decision."
+      ],
+      "expected_outcome": "qualified_answer",
+      "scenario": "normal",
+      "sentiment_target": null
+    },
+    {
+      "id": "fresh51-education",
+      "category": "education",
+      "question": "If I own a fund focused on one industry, am I automatically diversified? Explain whether fees and the chance of losses still matter.",
+      "tickers": [],
+      "expected_workflows": [
+        "education"
+      ],
+      "required_tool_groups": [
+        [
+          "get_investing_guide"
+        ]
+      ],
+      "allowed_tools": [
+        "get_investing_guide"
+      ],
+      "criteria": [
+        "Explain that a narrowly focused fund may remain concentrated despite pooled holdings; diversification spreads investments to reduce concentration risk but does not guarantee protection from losses. Explain that fees reduce the amount retained and funds still carry risk, citing the funds and diversification guides."
+      ],
+      "expected_outcome": "answer",
+      "scenario": "normal",
+      "sentiment_target": null
+    },
+    {
+      "id": "fresh51-insufficient_evidence",
+      "category": "insufficient_evidence",
+      "question": "What was Apple operating margin for 2025? If the financial figures are unavailable, tell me exactly what numbers I need and how to calculate it.",
+      "tickers": [
+        "AAPL"
+      ],
+      "expected_workflows": [
+        "research",
+        "investment"
+      ],
+      "required_tool_groups": [
+        [
+          "get_financials",
+          "get_financial_metric_history"
+        ]
+      ],
+      "allowed_tools": [
+        "get_company_profile",
+        "get_financials",
+        "get_financial_metric_history",
+        "calculate_financial_metrics"
+      ],
+      "criteria": [
+        "In the missing_financials scenario, do not invent a margin. Explain operating income divided by revenue times 100, with positive revenue and matching company, period and currency. State that retrieval failed rather than claiming the company never publishes the figures."
+      ],
+      "expected_outcome": "qualified_answer",
+      "scenario": "missing_financials",
+      "sentiment_target": null
+    }
+  ]
+}

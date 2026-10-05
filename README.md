@@ -89,6 +89,17 @@ The loop is bounded by time, model requests and investigation decisions. Reachin
 a limit does **not** mean the evidence is sufficient: unresolved gaps remain in
 the report, and unsupported claims are withheld.
 
+The experimental `efficient` profile adds a shorter branch for questions solely
+about public commentary on named companies. It resolves the companies, invokes
+the sentiment specialist, checks whether the reviewed briefs answer the question,
+and renders those briefs directly. It skips baseline financial collection and
+purchase drafting. Mixed financial or buying questions retain the full workflow.
+`standard` remains the default while per-category quality and efficiency are tested.
+
+Research plans in the experimental profile must name the metrics required by any
+financial-data coverage target. An invalid plan gets one repair attempt before
+retrieval; repeated failure remains an incomplete result, not a successful answer.
+
 ### How the other paths differ
 
 | Path | Main steps | Verification and result |

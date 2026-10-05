@@ -1,0 +1,26 @@
+{
+  "version": "broad-pilot-v1",
+  "description": "Nine categories, one development and one reserved validation case per category. Existing benchmark questions, not an unseen corpus. Pilot only; expand before rollout.",
+  "development": [
+    "financial_data-01",
+    "sec_filings-02",
+    "calculations-01",
+    "comparisons-01",
+    "open_research-02",
+    "investment-02",
+    "sentiment_news-02",
+    "education-01",
+    "insufficient_evidence-01"
+  ],
+  "validation": [
+    "financial_data-02",
+    "sec_filings-01",
+    "calculations-02",
+    "comparisons-02",
+    "open_research-01",
+    "investment-01",
+    "sentiment_news-01",
+    "education-02",
+    "insufficient_evidence-02"
+  ]
+}

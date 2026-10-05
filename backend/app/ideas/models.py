@@ -60,6 +60,7 @@ class StockIdea(Model):
 
 
 class IdeasDraft(Model):
+    answer_intent: Literal['information','investment_decision'] = Field(default='investment_decision', description='Use information for explanations, analyst commentary, factual comparisons, and research checklists. Use investment_decision only when the question asks whether/what to buy, sell, hold, or when to invest. Classify the user question, not the tools used.')
     ideas: list[StockIdea] = Field(max_length=25)
 
 
@@ -87,6 +88,10 @@ class IdeasSelection(Model):
         return IdeasRequest.clean_tickers(values)
 
 
+class ResolvedIdeasSelection(IdeasSelection):
+    company_references: list[str] = Field(max_length=25, description='For named_companies, copy each company name or ticker EXACTLY from the user question, in the same order as tickers. For discovery, education, or clarification return an empty list.')
+
+
 class IdeasClarification(ValueError):
     """A user-facing question that needs more detail."""
 
@@ -103,6 +108,11 @@ class IdeasInvestigation(Model):
         if self.action=='finish' and self.tool is not None:
             raise ValueError('A finish action cannot execute a tool')
         return self
+
+
+class QuestionInvestigation(IdeasInvestigation):
+    question_answered: bool = Field(description='Does existing evidence, reviewed sentiment and displayed checklist cover the original question? Optional background research is not a missing requirement. This is provisional; final source and question-coverage review still follows.')
+    remaining_question: str = Field(max_length=300, description='Specific unanswered part of the user question requiring another tool, or empty when answered. A specialist verification task is required only when the user asks to establish that underlying claim or make an investment decision.')
 
 
 class EducationalSection(Model):
@@ -131,6 +141,7 @@ class EducationalPartCheck(Model):
 
 
 class EducationalCoverageReview(EducationalReview):
+    original_question_covered: bool = Field(description='Does the answer cover the entire original user question, including any requested parts the plan omitted?')
     explanation: str = Field(max_length=160)
     covered_parts: list[EducationalPartCheck] = Field(max_length=4)
     missing_parts: list[int] = Field(max_length=4)

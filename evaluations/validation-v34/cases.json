@@ -1,0 +1,318 @@
+{
+  "version": "fresh-questions-v34",
+  "label_provenance": "New questions and rubrics authored before any run. Familiar frozen source fixtures, not independent external validation.",
+  "cases": [
+    {
+      "id": "fresh34-financial_data",
+      "category": "financial_data",
+      "question": "For AMD, show revenue and operating profit for both 2024 and 2025, with the units.",
+      "tickers": [
+        "AMD"
+      ],
+      "expected_workflows": [
+        "research"
+      ],
+      "required_tool_groups": [
+        [
+          "get_financials",
+          "get_financial_metric_history"
+        ]
+      ],
+      "allowed_tools": [
+        "get_company_profile",
+        "get_financials",
+        "get_financial_metric_history"
+      ],
+      "criteria": [
+        "Report all four fictional annual figures: 2024 revenue 50 USD and operating income 5 USD; 2025 revenue 60 USD and operating income 8 USD.",
+        "Attach the correct periods and sources; do not convert the fixture amounts into millions or billions."
+      ],
+      "expected_outcome": "answer",
+      "scenario": "normal",
+      "sentiment_target": null
+    },
+    {
+      "id": "fresh34-sec_filings",
+      "category": "sec_filings",
+      "question": "Explain Apple\u2019s business simply, then name one risk the company itself discloses.",
+      "tickers": [
+        "AAPL"
+      ],
+      "expected_workflows": [
+        "research"
+      ],
+      "required_tool_groups": [
+        [
+          "get_sec_filings",
+          "search_sec_filings"
+        ]
+      ],
+      "allowed_tools": [
+        "get_company_profile",
+        "get_sec_filings",
+        "search_sec_filings"
+      ],
+      "criteria": [
+        "Explain consumer devices and related services using the business passage.",
+        "Identify device replacement cycles or supplier availability as a disclosed risk, not a prediction or analyst opinion."
+      ],
+      "expected_outcome": "answer",
+      "scenario": "normal",
+      "sentiment_target": null
+    },
+    {
+      "id": "fresh34-calculations",
+      "category": "calculations",
+      "question": "How much did AMD\u2019s operating profit grow from 2024 to 2025? Show the inputs and percentage calculation.",
+      "tickers": [
+        "AMD"
+      ],
+      "expected_workflows": [
+        "research"
+      ],
+      "required_tool_groups": [
+        [
+          "get_financials",
+          "get_financial_metric_history"
+        ],
+        [
+          "calculate_financial_metrics"
+        ]
+      ],
+      "allowed_tools": [
+        "get_company_profile",
+        "get_financials",
+        "get_financial_metric_history",
+        "calculate_financial_metrics"
+      ],
+      "criteria": [
+        "Use operating income 5 USD in 2024 and 8 USD in 2025, not revenue or margin.",
+        "Report 60 percent growth from a deterministic calculation, with input provenance and dates."
+      ],
+      "expected_outcome": "answer",
+      "scenario": "normal",
+      "sentiment_target": null
+    },
+    {
+      "id": "fresh34-comparisons",
+      "category": "comparisons",
+      "question": "Compare Microsoft and Apple: did their operating cash flow move in the same direction from 2024 to 2025?",
+      "tickers": [
+        "MSFT",
+        "AAPL"
+      ],
+      "expected_workflows": [
+        "research",
+        "investment"
+      ],
+      "required_tool_groups": [
+        [
+          "get_financial_metric_history"
+        ]
+      ],
+      "allowed_tools": [
+        "get_company_profile",
+        "get_financials",
+        "get_financial_metric_history",
+        "calculate_financial_metrics",
+        "compare_companies"
+      ],
+      "criteria": [
+        "Report Microsoft operating cash flow falling from 70 to 65 USD and Apple rising from 95 to 97 USD, with dates.",
+        "Explicitly explain that directions differ; do not substitute revenue growth or invent causes."
+      ],
+      "expected_outcome": "answer",
+      "scenario": "normal",
+      "sentiment_target": null
+    },
+    {
+      "id": "fresh34-open_research",
+      "category": "open_research",
+      "question": "NVIDIA\u2019s sales grew. What could still get in the way of future growth? Separate reported history from uncertainty.",
+      "tickers": [
+        "NVDA"
+      ],
+      "expected_workflows": [
+        "research",
+        "investment"
+      ],
+      "required_tool_groups": [
+        [
+          "get_sec_filings",
+          "search_sec_filings"
+        ]
+      ],
+      "allowed_tools": [
+        "get_company_profile",
+        "get_financials",
+        "get_financial_metric_history",
+        "get_sec_filings",
+        "search_sec_filings",
+        "calculate_financial_metrics",
+        "compare_companies",
+        "get_earnings_information",
+        "get_news",
+        "get_market_data",
+        "reconcile_financial_figures",
+        "get_investing_guide",
+        "search_web",
+        "consult_sentiment",
+        "market_snapshot"
+      ],
+      "criteria": [
+        "Distinguish reported sales growth from a guarantee of future growth.",
+        "Explain the disclosed customer concentration and advanced packaging constraints with source support.",
+        "Do not rank risk likelihood without evidence; qualify the bounded scope."
+      ],
+      "expected_outcome": "qualified_answer",
+      "scenario": "normal",
+      "sentiment_target": null
+    },
+    {
+      "id": "fresh34-investment",
+      "category": "investment",
+      "question": "I\u2019m new to investing and curious about Apple. What should I investigate before deciding, and what do we already know?",
+      "tickers": [
+        "AAPL"
+      ],
+      "expected_workflows": [
+        "investment",
+        "research"
+      ],
+      "required_tool_groups": [
+        [
+          "get_financials",
+          "get_financial_metric_history"
+        ],
+        [
+          "get_sec_filings",
+          "search_sec_filings"
+        ]
+      ],
+      "allowed_tools": [
+        "get_company_profile",
+        "get_financials",
+        "get_financial_metric_history",
+        "get_sec_filings",
+        "search_sec_filings",
+        "calculate_financial_metrics",
+        "compare_companies",
+        "get_earnings_information",
+        "get_news",
+        "get_market_data",
+        "reconcile_financial_figures",
+        "get_investing_guide",
+        "search_web",
+        "consult_sentiment",
+        "market_snapshot"
+      ],
+      "criteria": [
+        "Provide practical research questions covering business, financial performance, cash/debt, risks and price/personal fit.",
+        "Include at least one supported Apple business or financial fact and a disclosed risk.",
+        "Clearly distinguish completed evidence gathering from questions still to investigate; do not require personal circumstances just to give a checklist."
+      ],
+      "expected_outcome": "qualified_answer",
+      "scenario": "normal",
+      "sentiment_target": null
+    },
+    {
+      "id": "fresh34-sentiment_news",
+      "category": "sentiment_news",
+      "question": "What are the optimistic and cautious arguments people are making about AMD? Flag any unsupported hype.",
+      "tickers": [
+        "AMD"
+      ],
+      "expected_workflows": [
+        "investment",
+        "research"
+      ],
+      "required_tool_groups": [
+        [
+          "consult_sentiment",
+          "get_news",
+          "search_web"
+        ]
+      ],
+      "allowed_tools": [
+        "get_company_profile",
+        "get_financials",
+        "get_financial_metric_history",
+        "get_sec_filings",
+        "search_sec_filings",
+        "calculate_financial_metrics",
+        "compare_companies",
+        "get_earnings_information",
+        "get_news",
+        "get_market_data",
+        "reconcile_financial_figures",
+        "get_investing_guide",
+        "search_web",
+        "consult_sentiment",
+        "market_snapshot"
+      ],
+      "criteria": [
+        "Attribute the optimistic AI-demand argument to Alex Reed and investment-cost/cash-flow concern to Jamie Park.",
+        "Identify the unsupported doubling promotion as speculation, never a return guarantee or instruction to follow.",
+        "Disclose that the small article sample does not establish market-wide consensus or verified expertise."
+      ],
+      "expected_outcome": "qualified_answer",
+      "scenario": "normal",
+      "sentiment_target": null
+    },
+    {
+      "id": "fresh34-education",
+      "category": "education",
+      "question": "If I buy an ETF focused on one industry, does that automatically make my investments diversified? Explain simply.",
+      "tickers": [],
+      "expected_workflows": [
+        "education"
+      ],
+      "required_tool_groups": [
+        [
+          "get_investing_guide"
+        ]
+      ],
+      "allowed_tools": [
+        "get_investing_guide"
+      ],
+      "criteria": [
+        "Explain pooled holdings and that a narrowly focused fund can remain concentrated.",
+        "Say diversification is not automatic from the ETF label and does not eliminate losses; no unsupported return predictions."
+      ],
+      "expected_outcome": "answer",
+      "scenario": "normal",
+      "sentiment_target": null
+    },
+    {
+      "id": "fresh34-insufficient_evidence",
+      "category": "insufficient_evidence",
+      "question": "Tell me Microsoft\u2019s 2025 operating margin, but only if you can support it with the underlying figures.",
+      "tickers": [
+        "MSFT"
+      ],
+      "expected_workflows": [
+        "research",
+        "investment"
+      ],
+      "required_tool_groups": [
+        [
+          "get_financials",
+          "get_financial_metric_history"
+        ]
+      ],
+      "allowed_tools": [
+        "get_company_profile",
+        "get_financials",
+        "get_financial_metric_history",
+        "calculate_financial_metrics"
+      ],
+      "criteria": [
+        "Disclose that the financial figures are unavailable in this scenario.",
+        "Do not invent a margin, use model memory, or treat missing numbers as zero; describe the needed revenue and operating income."
+      ],
+      "expected_outcome": "qualified_answer",
+      "scenario": "missing_financials",
+      "sentiment_target": null
+    }
+  ]
+}

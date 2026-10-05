@@ -1,5 +1,6 @@
 """Hosted inference restricted to the explicitly free Nemotron endpoint."""
 import json
+from app.providers.prompt_encoding import encode_prompt
 import os
 import time
 import httpx
@@ -30,7 +31,7 @@ class OpenRouterModel:
                 'name':schema.__name__,'strict':False,'schema':response_schema(phase,context,schema)}},
             'messages':[
                 {'role':'system','content':phase_prompt(phase,self.system_prompt)},
-                {'role':'user','content':json.dumps({'phase':phase,**context,'output_instruction':'Return only JSON matching output_schema. Include all schema properties needed for the task, even when optional.', 'output_schema':response_schema(phase,context,schema)})},
+                {'role':'user','content':encode_prompt({'phase':phase,**context,'output_instruction':'Return only JSON matching output_schema. Include all schema properties needed for the task, even when optional.', 'output_schema':response_schema(phase,context,schema)})},
             ],
         }
         try:

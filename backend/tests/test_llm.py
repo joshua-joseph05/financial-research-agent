@@ -179,3 +179,35 @@ def test_remote_ollama_endpoint_rejected(monkeypatch, url):
     monkeypatch.setenv('OLLAMA_BASE_URL', url)
     with pytest.raises(ValueError, match='local Ollama'):
         OllamaModel()
+
+
+@pytest.mark.parametrize('done_reason', ['stop', 'length'])
+def test_local_usage_records_actual_counts_including_rejected_output(done_reason):
+    from app.ideas.telemetry import MeteredModel
+    def handler(request):
+        if request.url.path == '/api/show':
+            return httpx.Response(200, json={})
+        return httpx.Response(200, json={'done': True, 'done_reason': done_reason,
+            'prompt_eval_count': 123, 'eval_count': 45,
+            'message': {'content': json.dumps({'companies': ['NVDA'], 'questions': ['Risks?']})}})
+    meter=MeteredModel(OllamaModel(), 2)
+    with patch('app.providers.llm.httpx.Client', side_effect=client_factory(handler)):
+        if done_reason == 'length':
+            with pytest.raises(ValueError, match='incomplete'):
+                meter.respond('plan', {}, Plan, 10)
+        else:
+            meter.respond('plan', {}, Plan, 10)
+    assert meter.report()['tokens'] == {'prompt_tokens':123, 'completion_tokens':45, 'total_tokens':168}
+    assert meter.report()['http_attempts'] == 1
+    assert meter.report()['request_budget_used'] == 1
+
+
+def test_missing_local_usage_is_not_reported_as_zero():
+    from app.ideas.telemetry import MeteredModel
+    def handler(request):
+        return httpx.Response(200, json={} if request.url.path == '/api/show' else {
+            'done': True, 'done_reason': 'stop', 'message': {'content': '{"questions": ["Risks?"]}'}})
+    meter=MeteredModel(OllamaModel(), 2)
+    with patch('app.providers.llm.httpx.Client', side_effect=client_factory(handler)):
+        meter.respond('plan', {}, Plan, 10)
+    assert meter.report()['tokens'] == {}

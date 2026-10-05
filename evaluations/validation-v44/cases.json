@@ -1,0 +1,323 @@
+{
+  "version": "fresh-questions-v44",
+  "label_provenance": "New question text and rubrics authored before inference. Familiar fictional sources and categories; not independent external validation.",
+  "cases": [
+    {
+      "id": "fresh44-financial_data",
+      "category": "financial_data",
+      "question": "For Apple, list operating cash flow and capital spending separately for 2024 and 2025, including the units.",
+      "tickers": [
+        "AAPL"
+      ],
+      "expected_workflows": [
+        "research"
+      ],
+      "required_tool_groups": [
+        [
+          "get_financials",
+          "get_financial_metric_history"
+        ]
+      ],
+      "allowed_tools": [
+        "get_company_profile",
+        "get_financials",
+        "get_financial_metric_history"
+      ],
+      "criteria": [
+        "Report annual operating cash flow 95 USD in 2024 and 97 USD in 2025; capital expenditure 10 and 12 USD respectively.",
+        "Keep metric labels, annual periods and units distinct; cite the matching records without inventing a millions/billions multiplier."
+      ],
+      "expected_outcome": "answer",
+      "scenario": "normal",
+      "sentiment_target": null
+    },
+    {
+      "id": "fresh44-sec_filings",
+      "category": "sec_filings",
+      "question": "Explain where Microsoft's revenue comes from and which expense pressures its filing warns about. Are those warnings proof of losses?",
+      "tickers": [
+        "MSFT"
+      ],
+      "expected_workflows": [
+        "research"
+      ],
+      "required_tool_groups": [
+        [
+          "get_sec_filings",
+          "search_sec_filings"
+        ]
+      ],
+      "allowed_tools": [
+        "get_company_profile",
+        "get_sec_filings",
+        "search_sec_filings"
+      ],
+      "criteria": [
+        "Explain cloud services and software subscriptions.",
+        "Identify infrastructure investment as a disclosed risk of increased depreciation and operating costs.",
+        "Distinguish a prospective risk from an established loss or proven cause; cite business and risk passages."
+      ],
+      "expected_outcome": "answer",
+      "scenario": "normal",
+      "sentiment_target": null
+    },
+    {
+      "id": "fresh44-calculations",
+      "category": "calculations",
+      "question": "What was NVIDIA's net-profit growth from 2024 to 2025? Give the starting and ending figures and show how the percentage is worked out.",
+      "tickers": [
+        "NVDA"
+      ],
+      "expected_workflows": [
+        "research"
+      ],
+      "required_tool_groups": [
+        [
+          "get_financials",
+          "get_financial_metric_history"
+        ],
+        [
+          "calculate_financial_metrics"
+        ]
+      ],
+      "allowed_tools": [
+        "get_company_profile",
+        "get_financials",
+        "get_financial_metric_history",
+        "calculate_financial_metrics"
+      ],
+      "criteria": [
+        "Use net income 25 USD for 2024 and 48 USD for 2025, not revenue or operating income.",
+        "Report 92 percent increase and show the input-based ratio or equivalent percentage formula, backed by deterministic calculation and dated sources."
+      ],
+      "expected_outcome": "answer",
+      "scenario": "normal",
+      "sentiment_target": null
+    },
+    {
+      "id": "fresh44-comparisons",
+      "category": "comparisons",
+      "question": "Whose sales grew faster in percentage terms between 2024 and 2025, AMD or Apple? Show the figures behind your conclusion.",
+      "tickers": [
+        "AMD",
+        "AAPL"
+      ],
+      "expected_workflows": [
+        "research",
+        "investment"
+      ],
+      "required_tool_groups": [
+        [
+          "get_financial_metric_history"
+        ]
+      ],
+      "allowed_tools": [
+        "get_company_profile",
+        "get_financials",
+        "get_financial_metric_history",
+        "calculate_financial_metrics",
+        "compare_companies"
+      ],
+      "criteria": [
+        "Report AMD revenue 50 to 60 USD and Apple 300 to 315 USD with annual periods.",
+        "Use deterministic calculations of 20 percent and 5 percent and explicitly conclude AMD grew faster; do not equate sales growth with better stock returns."
+      ],
+      "expected_outcome": "answer",
+      "scenario": "normal",
+      "sentiment_target": null
+    },
+    {
+      "id": "fresh44-open_research",
+      "category": "open_research",
+      "question": "NVIDIA's earnings release expects more demand. What has it actually reported, what is only an expectation, and which disclosed dependencies could make that outlook uncertain?",
+      "tickers": [
+        "NVDA"
+      ],
+      "expected_workflows": [
+        "research",
+        "investment"
+      ],
+      "required_tool_groups": [
+        [
+          "get_earnings_information"
+        ],
+        [
+          "get_sec_filings",
+          "search_sec_filings"
+        ]
+      ],
+      "allowed_tools": [
+        "get_company_profile",
+        "get_financials",
+        "get_financial_metric_history",
+        "get_sec_filings",
+        "search_sec_filings",
+        "calculate_financial_metrics",
+        "compare_companies",
+        "get_earnings_information",
+        "get_news",
+        "get_market_data",
+        "reconcile_financial_figures",
+        "get_investing_guide",
+        "search_web",
+        "consult_sentiment",
+        "market_snapshot"
+      ],
+      "criteria": [
+        "Identify reported fiscal 2025 revenue of 150 USD and distinguish management expectations of increased demand from an achieved result.",
+        "Explain customer concentration and advanced packaging supply constraints as disclosed risks to the outlook, not certain outcomes or established causes.",
+        "Keep source attribution and the bounded fictional scope clear; no guarantee of future growth."
+      ],
+      "expected_outcome": "qualified_answer",
+      "scenario": "normal",
+      "sentiment_target": null
+    },
+    {
+      "id": "fresh44-investment",
+      "category": "investment",
+      "question": "Help me build a long-term investment research checklist for Microsoft. What can the evidence already tell me, and what would I still need to check before deciding?",
+      "tickers": [
+        "MSFT"
+      ],
+      "expected_workflows": [
+        "investment",
+        "research"
+      ],
+      "required_tool_groups": [
+        [
+          "get_financials",
+          "get_financial_metric_history"
+        ],
+        [
+          "get_sec_filings",
+          "search_sec_filings"
+        ]
+      ],
+      "allowed_tools": [
+        "get_company_profile",
+        "get_financials",
+        "get_financial_metric_history",
+        "get_sec_filings",
+        "search_sec_filings",
+        "calculate_financial_metrics",
+        "compare_companies",
+        "get_earnings_information",
+        "get_news",
+        "get_market_data",
+        "reconcile_financial_figures",
+        "get_investing_guide",
+        "search_web",
+        "consult_sentiment",
+        "market_snapshot"
+      ],
+      "criteria": [
+        "Cover business, financial performance, cash/debt, risk, valuation and personal portfolio fit in practical research questions.",
+        "Include at least one supported Microsoft business or financial fact and the infrastructure/depreciation/operating-cost risk.",
+        "Separate evidence already available from open checks; do not require personal information merely to provide a checklist."
+      ],
+      "expected_outcome": "qualified_answer",
+      "scenario": "normal",
+      "sentiment_target": null
+    },
+    {
+      "id": "fresh44-sentiment_news",
+      "category": "sentiment_news",
+      "question": "Do optimistic comments about Apple mean experts agree it will do well? Contrast the positive and cautious arguments, and assess any promises of guaranteed gains.",
+      "tickers": [
+        "AAPL"
+      ],
+      "expected_workflows": [
+        "investment",
+        "research"
+      ],
+      "required_tool_groups": [
+        [
+          "consult_sentiment",
+          "get_news",
+          "search_web"
+        ]
+      ],
+      "allowed_tools": [
+        "get_company_profile",
+        "get_financials",
+        "get_financial_metric_history",
+        "get_sec_filings",
+        "search_sec_filings",
+        "calculate_financial_metrics",
+        "compare_companies",
+        "get_earnings_information",
+        "get_news",
+        "get_market_data",
+        "reconcile_financial_figures",
+        "get_investing_guide",
+        "search_web",
+        "consult_sentiment",
+        "market_snapshot"
+      ],
+      "criteria": [
+        "Attribute AI-demand optimism to Alex Reed and investment-cost/cash-flow concerns to Jamie Park.",
+        "Identify the doubling guarantee as unsupported speculation, not an investment instruction.",
+        "Explicitly say this small sample does not establish expert consensus or verified expertise; separate opinion from facts."
+      ],
+      "expected_outcome": "qualified_answer",
+      "scenario": "normal",
+      "sentiment_target": null
+    },
+    {
+      "id": "fresh44-education",
+      "category": "education",
+      "question": "Could a bond lose value when interest rates rise, and how is that different from the uncertainty of getting a stock dividend?",
+      "tickers": [],
+      "expected_workflows": [
+        "education"
+      ],
+      "required_tool_groups": [
+        [
+          "get_investing_guide"
+        ]
+      ],
+      "allowed_tools": [
+        "get_investing_guide"
+      ],
+      "criteria": [
+        "Explain that bond prices can fall when interest rates rise and that stock dividends are not guaranteed.",
+        "Clearly distinguish bond price risk from uncertainty about a dividend payment; support both concepts with appropriate guide citations and avoid predictions."
+      ],
+      "expected_outcome": "answer",
+      "scenario": "normal",
+      "sentiment_target": null
+    },
+    {
+      "id": "fresh44-insufficient_evidence",
+      "category": "insufficient_evidence",
+      "question": "Can you show AMD's revenue growth from 2024 to 2025? If the figures cannot be retrieved, explain which inputs are needed and how the calculation would work.",
+      "tickers": [
+        "AMD"
+      ],
+      "expected_workflows": [
+        "research",
+        "investment"
+      ],
+      "required_tool_groups": [
+        [
+          "get_financials",
+          "get_financial_metric_history"
+        ]
+      ],
+      "allowed_tools": [
+        "get_company_profile",
+        "get_financials",
+        "get_financial_metric_history",
+        "calculate_financial_metrics"
+      ],
+      "criteria": [
+        "Disclose financial data is unavailable; do not invent a growth rate, substitute zero, or use projections as reported values.",
+        "Explain the need for earlier and later values of the requested metric with matching scope/currency and comparable periods, and (later minus earlier) divided by earlier expressed as a percentage.",
+        "State the positive-base limitation and distinguish a method explanation from an actual calculation."
+      ],
+      "expected_outcome": "qualified_answer",
+      "scenario": "missing_financials",
+      "sentiment_target": null
+    }
+  ]
+}

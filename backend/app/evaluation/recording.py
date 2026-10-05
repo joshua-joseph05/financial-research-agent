@@ -16,8 +16,9 @@ from app.evaluation.sources import BenchmarkRegistry, source_environment
 from app.evaluation.frozen_sources import AS_OF
 
 class RecordingModel:
-    def __init__(self,base,budget,progress=None):
+    def __init__(self,base,budget,progress=None,frozen=False):
         self.base=base
+        self.frozen=frozen
         self.progress=progress or (lambda message:None)
         self.meter=MeteredModel(base,budget)
         self.decisions=[]
@@ -30,6 +31,8 @@ class RecordingModel:
     @system_prompt.setter
     def system_prompt(self,value):self.base.system_prompt=value
     def respond(self,phase,context,schema,timeout):
+        if self.frozen:
+            context={**context,'evaluation_scope':'This is an offline exercise using fictional company records returned by replayed tools. Answer the question within that supplied dataset; do not present the figures as real company facts. The fictional label is a disclosure, not by itself an unanswered research requirement. Missing requested facts, ambiguous issuers, unsupported claims, and unavailable data remain genuine gaps. Do not use outside knowledge or invent missing records.'}
         item={'phase':phase,'status':'started','observation_ids':list(context.get('observations',{})),
               'available_tools':[s['name'] for s in context.get('available_tools',[])],
               'prior_tool_count':len(context.get('previous_calls',context.get('previous_tool_calls',[])))}
@@ -68,7 +71,7 @@ def run_case(case,base_model,budget=36,mode='frozen',sentiment=True,target='assi
     import app.ideas.sentiment as sentiment_module
     from app.ideas.market import snapshot
     from app.providers.investing_guides import investing_guide
-    started=time.monotonic();model=RecordingModel(base_model,budget,progress)
+    started=time.monotonic();model=RecordingModel(base_model,budget,progress,frozen=mode=='frozen')
     owned=None
     if registry is None:
         if mode=='frozen':registry=BenchmarkRegistry(case.scenario)

@@ -76,7 +76,8 @@ def test_reported_facts_do_not_become_sentiment_votes():
     assert overall(args)=='insufficient_evidence'
 
 @pytest.mark.parametrize('enabled',[True,False])
-def test_lead_can_consult_and_use_compact_verified_handoff(monkeypatch,enabled):
+@pytest.mark.parametrize('profile',['standard','efficient'])
+def test_lead_can_consult_and_use_compact_verified_handoff(monkeypatch,enabled,profile):
     calls=[];sentiment=run_worker(Worker())
     def fake(*args,**kwargs):calls.append(1);return sentiment
     monkeypatch.setattr('app.ideas.sentiment.consult',fake)
@@ -86,7 +87,10 @@ def test_lead_can_consult_and_use_compact_verified_handoff(monkeypatch,enabled):
             assert phase!='ideas_delegate'
             if phase=='ideas_investigate':
                 names={s['name'] for s in context['available_tools']}
-                assert ('consult_sentiment' in names)==enabled
+                assert ('consult_sentiment' in names)==(enabled and (profile=='standard' or self.n==0))
+                if enabled and profile=='efficient' and self.n==0:
+                    spec=next(s for s in context['available_tools'] if s['name']=='consult_sentiment')
+                    assert spec['input_schema']['properties']['ticker']['enum']==['MSFT']
                 self.n+=1
                 if enabled and self.n==1:return IdeasInvestigation(action='tool',reason='Examine expectations',tool={'name':'consult_sentiment','arguments':{'ticker':'MSFT','objective':'Investigate expectations'}})
                 if enabled:
@@ -94,9 +98,11 @@ def test_lead_can_consult_and_use_compact_verified_handoff(monkeypatch,enabled):
                     assert brief['synthesis']['verification_tasks']
                     assert 'tool_calls' not in brief
                     assert brief['overall_sentiment']=='mixed'
-            if phase=='ideas_recommend' and enabled:assert context['sentiment_context'][0]['synthesis']['summary']
+            if phase=='ideas_recommend' and enabled:
+                if profile=='efficient':assert context['sentiment_context']==[]
+                else:assert context['sentiment_context'][0]['synthesis']['summary']
             return super().respond(phase,context,schema,timeout)
-    report=run_ideas(IdeasRequest(tickers=['MSFT'],sentiment_enabled=enabled),Lead(),Registry(),snapshot_fn=shot)
+    report=run_ideas(IdeasRequest(tickers=['MSFT'],sentiment_enabled=enabled),Lead(),Registry(),snapshot_fn=shot,execution_profile=profile)
     assert len(calls)==int(enabled)
     assert len(report['sentiment_results'])==int(enabled)
     assert 'specialist_results' not in report
@@ -171,3 +177,120 @@ def test_lead_tool_decision_requires_inputs_and_constrains_available_tools():
     choice=next(b for b in output['anyOf'] if b['properties']['action']['const']=='tool')
     assert choice['properties']['tool']['anyOf'][0]['properties']['name']['const']=='consult_sentiment'
     assert 'tool' in choice['required']
+
+
+@pytest.mark.parametrize('supported', [True, False])
+def test_efficient_sentiment_saves_synthesis_call_but_keeps_source_review(supported):
+    results=[]; meters=[]
+    for profile in ('standard','efficient'):
+        meter=MeteredModel(Worker(supported=supported),16)
+        result=consult(ConsultArgs(ticker='MSFT',objective='Investigate expectations'),meter,LiveRegistry(),time.monotonic()+450,search_fn=search,read_fn=lambda row,*args:ROWS[row['id']],execution_profile=profile)
+        results.append(result);meters.append(meter)
+    assert len(meters[1].calls)==len(meters[0].calls)-1
+    assert any(c['phase'].endswith('review') for c in meters[1].calls)
+    assert results[0]['arguments']==results[1]['arguments']
+    assert results[1]['status']==('reviewed_sample' if supported else 'insufficient_evidence')
+    if supported:
+        assert results[1]['overall_sentiment']=='mixed'
+        assert 'not market-wide consensus' in results[1]['synthesis']['summary']['text']
+    else:
+        assert results[1]['synthesis'] is None
+
+
+def test_efficient_sentiment_rejects_fabricated_quotes():
+    result=consult(ConsultArgs(ticker='MSFT',objective='Investigate expectations'),MeteredModel(Worker(quote='This fabricated quotation never appeared in the article.'),16),LiveRegistry(),time.monotonic()+450,search_fn=search,read_fn=lambda row,*args:ROWS[row['id']],execution_profile='efficient')
+    assert len(result['arguments'])==1
+    assert result['overall_sentiment']=='insufficient_evidence'
+    assert result['arguments'][0]['kind']=='forecast'
+
+
+def test_efficient_runtime_blocks_repeat_issuer_even_when_another_is_available(monkeypatch):
+    consultations=[]
+    sentiment=run_worker(Worker())
+    def fake(*args,**kwargs):
+        consultations.append(args[0].ticker)
+        return sentiment
+    monkeypatch.setattr('app.ideas.sentiment.consult',fake)
+    class Lead(Model):
+        n=0
+        def respond(self,phase,context,schema,timeout):
+            if phase=='ideas_investigate':
+                self.n+=1
+                if self.n==2:
+                    spec=next(s for s in context['available_tools'] if s['name']=='consult_sentiment')
+                    assert spec['input_schema']['properties']['ticker']['enum']==['NVDA']
+                if self.n<=2:
+                    # Emulate a provider violating the schema with different arguments.
+                    return IdeasInvestigation(action='tool',reason='Check expectations',tool={'name':'consult_sentiment','arguments':{'ticker':'MSFT','objective':f'Investigate expectations {self.n}'}})
+            return super().respond(phase,context,schema,timeout)
+    report=run_ideas(IdeasRequest(tickers=['MSFT','NVDA']),Lead(),Registry(),snapshot_fn=shot,execution_profile='efficient')
+    assert consultations==['MSFT']
+    assert len(report['sentiment_results'])==1
+    assert any(c.get('reason')=='Repeated tool call' for c in report['tool_calls'])
+
+
+@pytest.mark.parametrize('placeholder',['empty','unknown','N/A','none'])
+def test_missing_author_placeholder_keeps_exact_quotes_subject_to_review(placeholder):
+    class UnknownAuthor(Worker):
+        def respond(self,phase,context,schema,timeout):
+            result=super().respond(phase,context,schema,timeout)
+            if phase.endswith('extract'):
+                result.arguments=[a.model_copy(update={'attribution':placeholder}) for a in result.arguments]
+            if phase.endswith('review'):
+                assert all(a['attribution']=='' for a in context['arguments'])
+            return result
+    def run(approve):
+        return consult(ConsultArgs(ticker='MSFT',objective='Investigate expectations'),MeteredModel(UnknownAuthor(supported=approve),16),LiveRegistry(),time.monotonic()+450,search_fn=search,read_fn=lambda r,*args:ROWS[r['id']],execution_profile='efficient')
+    assert len(run(True)['arguments'])==2
+    assert not run(False)['arguments']
+
+
+def test_speculation_does_not_supply_an_independent_sentiment_vote():
+    arguments=[{'kind':'analyst_opinion','stance':'bearish','source':{'publisher':'news'}},
+               {'kind':'speculation','stance':'bullish','source':{'publisher':'promotion'}}]
+    assert overall(arguments)=='insufficient_evidence'
+
+
+@pytest.mark.parametrize('failure',['invented_author','invented_quote'])
+def test_placeholder_recovery_never_bypasses_real_source_checks(failure):
+    class InvalidSource(Worker):
+        def respond(self,phase,context,schema,timeout):
+            result=super().respond(phase,context,schema,timeout)
+            if phase.endswith('extract'):
+                changes={'attribution':'Fabricated Expert'} if failure=='invented_author' else {'attribution':'empty','quote':'This invented statement is absent from both original articles.'}
+                result.arguments=[a.model_copy(update=changes) for a in result.arguments]
+            return result
+    result=consult(ConsultArgs(ticker='MSFT',objective='Investigate expectations'),MeteredModel(InvalidSource(),16),LiveRegistry(),time.monotonic()+450,search_fn=search,read_fn=lambda r,*args:ROWS[r['id']],execution_profile='efficient')
+    assert not result['arguments']
+    assert result['synthesis'] is None
+
+
+def test_attributed_speculative_analyst_view_is_not_erased_from_opinion_coverage():
+    from app.ideas.sentiment import evidence_brief,attributed_opinion
+    positive={'id':'positive','article_id':'one','kind':'speculation','stance':'bullish',
+              'point':'The business could benefit from rising demand.',
+              'quote':'Analyst Casey Chen believes the business could benefit from rising demand.',
+              'attribution':'Casey Chen','source':{'publisher':'first'}}
+    negative={'id':'negative','article_id':'two','kind':'analyst_opinion','stance':'bearish',
+              'point':'Spending could increase costs.','quote':'Analyst Morgan Lee argues spending could increase costs.',
+              'attribution':'Morgan Lee','source':{'publisher':'second'}}
+    assert attributed_opinion(positive)
+    assert overall([positive,negative])=='mixed'
+    brief=evidence_brief([positive,negative])
+    assert set(brief['summary']['argument_ids'])=={'positive','negative'}
+    assert 'Casey Chen' in brief['bullish_arguments'][0]['text']
+    assert 'Unverified source speculation' in brief['bullish_arguments'][0]['text']
+    # A quoted attribution is not independently verified expertise or truth.
+    assert positive['kind']=='speculation'
+
+
+@pytest.mark.parametrize('quote,attribution',[
+    ('A promotion guarantees that shares will double.',''),
+    ('An article discusses analyst Casey Chen without quoting any opinion.','Casey Chen'),
+    ('Analyst Someone Else believes the outlook is positive.','Casey Chen'),
+])
+def test_unattributed_or_unmatched_speculation_is_not_an_opinion_vote(quote,attribution):
+    from app.ideas.sentiment import attributed_opinion
+    arg={'kind':'speculation','stance':'bullish','quote':quote,'attribution':attribution,'source':{'publisher':'one'}}
+    assert not attributed_opinion(arg)
+    assert overall([arg,dict(arg,source={'publisher':'two'})])=='insufficient_evidence'

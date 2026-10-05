@@ -11,6 +11,8 @@ class ResearchState(TypedDict):
     findings: list[dict[str, Any]]
     open_questions: list[str]
     verification: dict[str, Any]
+    verification_input_hash: str
+    assessment_action: str
     pending_tool: dict[str, Any] | None
     iteration_count: int
     verification_count: int

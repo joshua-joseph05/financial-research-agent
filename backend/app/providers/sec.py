@@ -115,9 +115,20 @@ class SECClient:
     def resolve(self, requested):
         rows = self.get('https://www.sec.gov/files/company_tickers.json').values()
         query = requested.strip().upper()
-        matches = [r for r in rows if r['ticker'].upper() == query or r['title'].upper() == query]
+        matches = [r for r in rows if r['ticker'].upper() == query] or [r for r in rows if r['title'].upper() == query]
         if len(matches) != 1:
-            raise ValueError('Company not uniquely resolved. Supply its exact SEC-listed ticker.')
+            import re
+            def name_words(value):
+                return [word for word in re.findall(r'[A-Z0-9]+',value.upper())
+                        if word not in {'THE','INC','INCORPORATED','CORP','CORPORATION','LTD','LIMITED','PLC','CO','COMPANY'}]
+            words=name_words(query)
+            exact=[r for r in rows if words and name_words(r['title'])==words]
+            candidates=exact or [r for r in rows if words and name_words(r['title'])[:len(words)]==words]
+            # Multiple share classes of one issuer are not multiple companies.
+            if len({str(r['cik_str']) for r in candidates})==1:
+                matches=candidates[:1]
+            else:
+                raise ValueError('Company not uniquely resolved. Supply its exact SEC-listed ticker.')
         row = matches[0]
         return row['ticker'], str(row['cik_str']).zfill(10), row['title']
 

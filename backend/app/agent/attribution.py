@@ -56,7 +56,7 @@ def explanation_gaps(state, findings):
     return gaps
 
 
-def render_findings(findings, observations):
+def render_findings(findings, observations, historical_explanation=True):
     """No new free-text summary claims after verification. Preserve claim qualifiers."""
     parts = []
     for finding in findings:
@@ -67,7 +67,7 @@ def render_findings(findings, observations):
         cited_passages = [observations[key] for key in finding['evidence_ids'] if key.startswith('passage:') and key in observations]
         for ticker in {e['ticker'] for e in cited_passages}:
             dates = sorted({e['period_end'] for e in observations.values() if e.get('ticker') == ticker and e.get('period_end') and not e.get('operation')}, reverse=True)[:2]
-            if finding.get('kind') != 'risk' and len(dates) == 2 and (finding.get('scope') != 'company' or finding.get('fiscal_years') != [int(d[:4]) for d in dates]):
+            if historical_explanation and finding.get('kind') != 'risk' and len(dates) == 2 and (finding.get('scope') != 'company' or finding.get('fiscal_years') != [int(d[:4]) for d in dates]):
                 labels.append('Background only; not the company comparison being explained')
                 break
         if finding.get('scope') == 'company':
@@ -75,10 +75,10 @@ def render_findings(findings, observations):
         elif finding.get('scope') == 'segment':
             labels.append('Business area: ' + (finding.get('segment') or 'unspecified'))
         elif finding.get('scope') == 'unknown':
-            labels.append('Disclosed risk' if finding.get('kind') == 'risk' else 'Scope unverified; background only')
+            labels.append('Disclosed risk' if finding.get('kind') == 'risk' else ('Scope unverified; background only' if historical_explanation else 'Source-reported'))
         if finding.get('fiscal_years'):
             labels.append('FY ' + ' vs FY '.join(str(y) for y in finding['fiscal_years']))
-        elif finding.get('kind') != 'risk' and any(key.startswith('passage:') for key in finding['evidence_ids']):
+        elif historical_explanation and finding.get('kind') != 'risk' and any(key.startswith('passage:') for key in finding['evidence_ids']):
             labels.append('Comparison period unverified')
         if finding.get('explains_change'):
             labels.append('Interpretation' if finding.get('kind') == 'interpretation' else 'Reported explanation')
@@ -90,6 +90,7 @@ def render_findings(findings, observations):
 def calculation_findings(observations):
     """Verified arithmetic gets canonical prose, never LLM-rewritten dates or values."""
     from app.schemas import Finding
+    from decimal import Decimal, InvalidOperation
     findings = []
     for record in observations.values():
         operation = record.get('operation')
@@ -107,6 +108,22 @@ def calculation_findings(observations):
             text = f"{record['ticker']} {a['metric'].replace('_', ' ')} changed by {record['value']}% from {b['period']} to {a['period']}."
         else:
             continue
+        # Show the sourced arithmetic, not just the final percentage. The
+        # downstream structural check still reproduces the calculation.
+        if a.get('value') is not None and b.get('value') is not None:
+            unit = a.get('unit') or ''
+            if operation == 'growth':
+                text += f" Calculation ({unit} inputs): ({a['value']} − {b['value']}) ÷ {b['value']} = {record['value']}%."
+            elif operation == 'operating_margin':
+                text += f" Calculation ({unit} inputs): {a['value']} ÷ {b['value']} = {record['value']}%."
+            elif operation == 'margin_change':
+                text += f" Calculation: {a['value']}% − {b['value']}% = {record['value']} percentage points."
+        if operation in ('growth','margin_change'):
+            try:
+                change=Decimal(str(record['value']))
+                if not change.is_finite():continue
+            except (InvalidOperation,ValueError,TypeError):continue
+            text += ' This is an increase.' if change>0 else ' This is a decrease.' if change<0 else ' There is no change at the displayed precision.'
         findings.append(Finding(id='derived:' + record['id'], text=text, evidence_ids=[record['id']], scope='company').model_dump())
     return findings
 
@@ -131,3 +148,29 @@ def clean_citation_suffix(finding):
     if keys and all(key in finding['evidence_ids'] for key in keys):
         return {**finding, 'text': finding['text'][:match.start()].rstrip()}
     return finding
+
+
+def reported_financial_findings(observations):
+    """Render exact annual reported values; no inference or fiscal-year guessing."""
+    from decimal import Decimal, InvalidOperation
+    from datetime import date
+    from app.schemas import Finding
+    labels = {'revenue':'revenue', 'operating_income':'operating income',
+              'net_income':'net income', 'operating_cash_flow':'operating cash flow',
+              'capital_expenditure':'capital expenditure'}
+    findings=[]
+    for record in observations.values():
+        if (record.get('operation') or record.get('metric') not in labels
+                or record.get('period_type') != 'annual'
+                or record.get('scope') != 'company'
+                or record.get('value') is None or not record.get('unit')
+                or not record.get('ticker') or not record.get('source_id')):
+            continue
+        try:
+            if not Decimal(str(record['value'])).is_finite():continue
+            end=date.fromisoformat(record['period_end']).isoformat()
+        except (ValueError, TypeError, KeyError, InvalidOperation):
+            continue
+        text=f"{record['ticker']} reported {labels[record['metric']]} of {record['value']} {record['unit']} for the annual period ending {end}."
+        findings.append(Finding(id='derived:reported:'+record['id'],text=text,evidence_ids=[record['id']],scope='company').model_dump())
+    return findings

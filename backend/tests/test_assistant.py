@@ -47,3 +47,39 @@ def test_unified_endpoint_uses_shared_busy_gate(monkeypatch):
     monkeypatch.setattr(api,'busy',True)
     with TestClient(api.app) as client:
         assert client.post('/assistant',json={'question':'What is diversification?'}).status_code==409
+
+
+@pytest.mark.parametrize('workflow',['research','investment','education'])
+def test_missing_context_is_checked_before_every_efficient_workflow(monkeypatch,workflow):
+    from app.assistant import EfficientRoute
+    class MissingContext:
+        def respond(self,phase,context,schema,timeout):
+            assert phase=='assistant_route'
+            assert 'no prior conversation' in context['instruction']
+            return EfficientRoute(workflow=workflow,reason='Comparison',unresolved_reference='that other company we discussed')
+    monkeypatch.setattr('app.assistant.run_research',lambda *a,**k:pytest.fail('Must clarify before research'))
+    monkeypatch.setattr('app.assistant.run_ideas',lambda *a,**k:pytest.fail('Must clarify before investment/education'))
+    with pytest.raises(IdeasClarification,match='Which company or stock ticker'):
+        run_assistant(AssistantRequest(question='Compare Apple with that other company we discussed.',execution_profile='efficient'),lambda e:None,MissingContext(),Registry())
+
+
+def test_general_discovery_does_not_require_a_named_company(monkeypatch):
+    from app.assistant import EfficientRoute
+    class Discovery:
+        def respond(self,phase,context,schema,timeout):
+            return EfficientRoute(workflow='investment',reason='Discover research candidates',unresolved_reference='')
+    monkeypatch.setattr('app.assistant.run_ideas',lambda *a,**k:{'ideas':[]})
+    result=run_assistant(AssistantRequest(question='What stocks could I research?',execution_profile='efficient'),lambda e:None,Discovery(),Registry())
+    assert result['workflow']=='investment'
+
+
+@pytest.mark.parametrize('placeholder',['N/A','none','null','empty','not applicable'])
+def test_empty_reference_placeholder_does_not_block_self_contained_request(monkeypatch,placeholder):
+    from app.assistant import EfficientRoute
+    class CompleteQuestion:
+        def respond(self,phase,context,schema,timeout):
+            return EfficientRoute(workflow='investment',reason='Sentiment',unresolved_reference=placeholder)
+    monkeypatch.setattr('app.assistant.run_ideas',lambda *a,**k:{'ideas':[]})
+    assert run_assistant(AssistantRequest(question='What are bullish and bearish arguments about Microsoft?',execution_profile='efficient'),lambda e:None,CompleteQuestion(),Registry())['workflow']=='investment'
+    with pytest.raises(IdeasClarification,match='Which company or stock ticker'):
+        run_assistant(AssistantRequest(question=f'Compare Microsoft with {placeholder}',execution_profile='efficient'),lambda e:None,CompleteQuestion(),Registry())

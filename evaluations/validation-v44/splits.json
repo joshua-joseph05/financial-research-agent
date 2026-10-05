@@ -1,0 +1,14 @@
+{
+  "development": [],
+  "validation": [
+    "fresh44-financial_data",
+    "fresh44-sec_filings",
+    "fresh44-calculations",
+    "fresh44-comparisons",
+    "fresh44-open_research",
+    "fresh44-investment",
+    "fresh44-sentiment_news",
+    "fresh44-education",
+    "fresh44-insufficient_evidence"
+  ]
+}

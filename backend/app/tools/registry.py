@@ -19,7 +19,7 @@ class CompanyArgs(Model):
 class FilingArgs(CompanyArgs):
     scope: Literal["company", "segment", "all"] = "all"
     fiscal_year: int | None = Field(default=None, ge=1990, le=2100)
-    section: str | None = Field(default=None, max_length=80)
+    section: Literal["business", "risks", "md&a"] | None = Field(default=None, description="Supported filing topic; omit to read all available topics.")
 
 
 class SearchArgs(CompanyArgs):
@@ -69,10 +69,16 @@ class ToolRegistry:
         numbers = [Evidence.model_validate(e) for e in observations.values() if e.get("value") is not None]
         used = {json.dumps(c["arguments"], sort_keys=True) for c in previous_calls or []
                 if c["name"] == "calculate_financial_metrics" and c["result"]["status"] == "ok"}
+        # Never propose cross-company or cross-unit calculations. Index first
+        # instead of constructing and rejecting every unrelated pair. Preserve
+        # input order so prompts and tool choices remain byte-for-byte identical.
+        compatible = {}
+        for number in numbers:
+            compatible.setdefault((number.ticker, number.unit), []).append(number)
         choices = []
         for operation in ("operating_margin", "growth", "margin_change"):
             for a in numbers:
-                for b in numbers:
+                for b in compatible[(a.ticker, a.unit)]:
                     try:
                         calculate(operation, [a, b])
                     except (ValueError, ArithmeticError):
@@ -87,14 +93,17 @@ class ToolRegistry:
         # Offer a batch comparison when two valid annual margin pairs exist.
         pairs = []
         for a in numbers:
-            for b in numbers:
+            for b in compatible[(a.ticker, a.unit)]:
                 try:
                     value, unit = calculate("operating_margin", [a, b])
                     pairs.append((a, b, a.model_copy(update={"metric": "operating_margin", "value": value, "unit": unit})))
                 except (ValueError, ArithmeticError):
                     continue
+        compatible_margins = {}
+        for pair in pairs:
+            compatible_margins.setdefault((pair[2].ticker, pair[2].unit), []).append(pair)
         for a, b, margin in pairs:
-            for c, d, previous in pairs:
+            for c, d, previous in compatible_margins[(margin.ticker, margin.unit)]:
                 try:
                     calculate("margin_change", [margin, previous])
                 except (ValueError, ArithmeticError):
